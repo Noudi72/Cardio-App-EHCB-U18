@@ -164,15 +164,19 @@
       order: 2;
     }
     #rpmHr {
-      font-size: 0.65em;
+      font-size: 0.56em;
       font-weight: 600;
       color: inherit;
       margin-bottom: 6px;
       display: flex;
       justify-content: center;
-      gap: 40px;
+      flex-wrap: wrap;
+      gap: 18px;
       order: 3;
       letter-spacing: 0.7px;
+      word-break: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     #rpmHr span {
       white-space: nowrap;
@@ -187,26 +191,35 @@
       text-shadow: none;
       order: 4;
     }
-    .cardio-buttons {
-      text-align: center;
-      margin-bottom: 34px;
-      margin-top: 5px;
+    .cardio-buttons-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 0 auto;
+      gap: 0;
+      position: relative;
+      bottom: 0;
     }
-    .cardio-buttons button {
+    .cardio-buttons-row button {
       background: #d32f2f;
       color: #fff;
       font-weight: bold;
-      font-size: 1.11em;
+      font-size: 1.35em;
       border: none;
-      border-radius: 16px;
-      margin: 0 10px 0 10px;
-      padding: 11px 23px;
+      border-radius: 0 0 32px 32px;
+      padding: 20px 0 20px 0;
       cursor: pointer;
       box-shadow: 0 1px 6px #0002;
       transition: background 0.13s;
-      min-width: 100px;
+      min-width: 46%;
+      max-width: 300px;
+      margin: 0;
+      flex: 1 1 0;
+      /* Remove double border radius if only left/right: fix below per button if needed */
     }
-    .cardio-buttons button:hover {
+    .cardio-buttons-row button:hover {
       background: #b71c1c;
     }
     @media (max-width: 799px) {
@@ -215,15 +228,35 @@
         align-items: center;
       }
       .autogen-controls label {
-        width: 90vw;
-        min-width: auto;
+        width: 96vw;
+        max-width: 500px;
+        margin-left: auto;
         margin-right: 0;
+        min-width: auto;
       }
       .autogen-controls button {
         margin-top: 10px;
         width: 98vw;
         max-width: 98vw;
         padding: 11px 0;
+      }
+      .cardio-buttons-row {
+        flex-direction: column;
+        width: 97vw;
+        max-width: 97vw;
+        gap: 6px;
+        margin: 0 auto 0 auto;
+      }
+      .cardio-buttons-row button {
+        font-size: 1.35em;
+        min-width: 97vw;
+        max-width: 97vw;
+        border-radius: 0 0 32px 32px;
+        padding: 20px 0 20px 0;
+        margin-bottom: 0;
+      }
+      .cardio-buttons-row button + button {
+        margin-top: 8px;
       }
     }
     @media (min-width: 800px) {
@@ -297,6 +330,13 @@
       .autogen-controls label {
         font-size: 1em;
         padding: 8px 9px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 96vw;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: 0;
       }
       .autogen-controls label input {
         font-size: 1em;
@@ -305,6 +345,24 @@
       .autogen-controls button {
         max-width: 98vw;
         padding: 11px 0;
+      }
+      .cardio-buttons-row {
+        flex-direction: column;
+        width: 97vw;
+        max-width: 97vw;
+        gap: 6px;
+        margin: 0 auto 0 auto;
+      }
+      .cardio-buttons-row button {
+        font-size: 1.35em;
+        min-width: 97vw;
+        max-width: 97vw;
+        border-radius: 0 0 32px 32px;
+        padding: 20px 0 20px 0;
+        margin-bottom: 0;
+      }
+      .cardio-buttons-row button + button {
+        margin-top: 8px;
       }
     }
   </style>
@@ -330,8 +388,9 @@
   <div id="rpmHr"><span>RPM: <b>-</b></span><span>HR: <b>-</b>%</span></div>
   <div id="phaseCount"></div>
 </div>
-<div class="cardio-buttons">
+<div class="cardio-buttons-row" id="cardioButtonsRow">
   <button id="startBtn">Start</button>
+  <button id="pauseBtn" style="display:none;">Pause</button>
   <button id="resetBtn">Reset</button>
 </div>
 <script>
@@ -351,7 +410,7 @@
 
   let sets = 4, cycles = 8, work = 30, rest = 15, relax = 120;
   let phases = generatePhases(sets, cycles, work, rest, relax);
-  let currentPhase = 0, timer = null, running = false, t = phases[0].duration;
+  let currentPhase = 0, timer = null, running = false, paused = false, t = phases[0].duration;
   let workAudioFlag = false;
 
   function updateUI() {
@@ -397,9 +456,14 @@
   }
 
   function startProgram() {
-    if (running) return;
+    if (running && !paused) return;
     running = true;
+    paused = false;
     document.getElementById("startBtn").disabled = true;
+    document.getElementById("startBtn").textContent = "Start";
+    document.getElementById("pauseBtn").style.display = "";
+    document.getElementById("resetBtn").style.display = "";
+    hideNonTimerUI(true);
     timer = setInterval(() => {
       t--;
       const p = phases[currentPhase];
@@ -416,14 +480,39 @@
     }, 1000);
   }
 
+  function pauseProgram() {
+    if (!running || paused) return;
+    paused = true;
+    clearInterval(timer);
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "Resume";
+    document.getElementById("pauseBtn").style.display = "none";
+  }
+
   function resetProgram() {
     clearInterval(timer);
     running = false;
+    paused = false;
     currentPhase = 0;
     t = parseInt(phases[0].duration);
     workAudioFlag = false; // reset flag on reset
     updateUI();
     document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "Start";
+    document.getElementById("pauseBtn").style.display = "none";
+    document.getElementById("resetBtn").style.display = "";
+    hideNonTimerUI(false);
+  }
+
+  function hideNonTimerUI(hide) {
+    // Hide .autogen-controls, .info-text, .desc, .logo if hide==true
+    const elems = [
+      document.querySelector('.autogen-controls'),
+      document.querySelector('.info-text'),
+      document.querySelector('.desc'),
+      document.querySelector('.logo')
+    ];
+    elems.forEach(el => { if (el) el.style.display = hide ? "none" : ""; });
   }
 
   function autogenPhases() {
@@ -436,9 +525,18 @@
     resetProgram();
   }
 
-  document.getElementById("startBtn").onclick = startProgram;
+  document.getElementById("startBtn").onclick = function() {
+    if (paused) {
+      startProgram();
+    } else {
+      startProgram();
+    }
+  };
+  document.getElementById("pauseBtn").onclick = pauseProgram;
   document.getElementById("resetBtn").onclick = resetProgram;
 
+  // On load, show only Start and Reset, hide Pause
+  document.getElementById("pauseBtn").style.display = "none";
   updateUI();
 
   // --- Optional: Add Audio triggers (left as comment for you to add your mp3/ogg files) ---
