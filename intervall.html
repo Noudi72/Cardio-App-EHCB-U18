@@ -193,72 +193,36 @@
     }
     .cardio-buttons-row {
       display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      width: 100%;
-      max-width: 600px;
+      flex-direction: column;
+      width: 98vw;
+      max-width: 98vw;
+      gap: 15px;
       margin: 0 auto 0 auto;
-      gap: 0;
       position: relative;
       bottom: 0;
+      align-items: stretch;
+      justify-content: flex-start;
     }
     .cardio-buttons-row button {
       background: #d32f2f;
       color: #fff;
       font-weight: bold;
-      font-size: 1.35em;
+      font-size: 1.39em;
       border: none;
       border-radius: 0 0 32px 32px;
-      padding: 20px 0 20px 0;
+      padding: 22px 0;
       cursor: pointer;
       box-shadow: 0 1px 6px #0002;
       transition: background 0.13s;
-      min-width: 46%;
-      max-width: 300px;
+      min-width: 98vw;
+      max-width: 98vw;
       margin: 0;
-      flex: 1 1 0;
-      /* Remove double border radius if only left/right: fix below per button if needed */
+      flex: unset;
     }
     .cardio-buttons-row button:hover {
       background: #b71c1c;
     }
-    @media (max-width: 799px) {
-      .autogen-controls {
-        flex-direction: column;
-        align-items: center;
-      }
-      .autogen-controls label {
-        width: 96vw;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: 0;
-        min-width: auto;
-      }
-      .autogen-controls button {
-        margin-top: 10px;
-        width: 98vw;
-        max-width: 98vw;
-        padding: 11px 0;
-      }
-      .cardio-buttons-row {
-        flex-direction: column;
-        width: 97vw;
-        max-width: 97vw;
-        gap: 6px;
-        margin: 0 auto 0 auto;
-      }
-      .cardio-buttons-row button {
-        font-size: 1.35em;
-        min-width: 97vw;
-        max-width: 97vw;
-        border-radius: 0 0 32px 32px;
-        padding: 20px 0 20px 0;
-        margin-bottom: 0;
-      }
-      .cardio-buttons-row button + button {
-        margin-top: 8px;
-      }
-    }
+    /* No .cardio-buttons-row media queries needed; always column, wide, big buttons */
     @media (min-width: 800px) {
       .phaseBox {
         max-width: 400px;
@@ -307,7 +271,7 @@
         gap: 8px;
       }
       #timer {
-        font-size: 3.4em;
+        font-size: 5.5em;
         margin-bottom: 6px;
       }
       .phaseLabel {
@@ -345,24 +309,6 @@
       .autogen-controls button {
         max-width: 98vw;
         padding: 11px 0;
-      }
-      .cardio-buttons-row {
-        flex-direction: column;
-        width: 97vw;
-        max-width: 97vw;
-        gap: 6px;
-        margin: 0 auto 0 auto;
-      }
-      .cardio-buttons-row button {
-        font-size: 1.35em;
-        min-width: 97vw;
-        max-width: 97vw;
-        border-radius: 0 0 32px 32px;
-        padding: 20px 0 20px 0;
-        margin-bottom: 0;
-      }
-      .cardio-buttons-row button + button {
-        margin-top: 8px;
       }
     }
   </style>
@@ -426,6 +372,21 @@
 
   function playAudioSafe(audioElement) {
     if (!audioElement) return;
+    // Safari workaround: play silent audio if not yet unlocked
+    if (window._audioUnlocked !== true && audioElement.paused) {
+      // try to play a short silence to unlock
+      try {
+        audioElement.volume = 0;
+        audioElement.play().then(() => {
+          audioElement.pause();
+          audioElement.currentTime = 0;
+          audioElement.volume = 1;
+        }).catch(()=>{});
+      } catch(e){}
+      window._audioUnlocked = true;
+    }
+    // Now play for real
+    audioElement.volume = 1;
     const playPromise = audioElement.play();
     if (playPromise !== undefined) {
       playPromise.catch(() => {
@@ -445,13 +406,17 @@
         playAudioSafe(document.getElementById('audioWork'));
       } else if (ptype === 'rest') {
         playAudioSafe(document.getElementById('audioRest'));
+      } else if (ptype === 'relax') {
+        // Optionally play relax audio if you have one
+      } else if (ptype === 'prepare') {
+        // Optionally play prepare audio if you have one
       }
     } else {
       running = false;
       clearInterval(timer);
       document.getElementById("startBtn").disabled = false;
       playAudioSafe(document.getElementById('audioEnd'));
-      // Optional: Play session complete audio here
+      // Session complete audio
     }
   }
 
@@ -464,6 +429,18 @@
     document.getElementById("pauseBtn").style.display = "";
     document.getElementById("resetBtn").style.display = "";
     hideNonTimerUI(true);
+    // Play phase audio at (re)start if needed
+    const p = phases[currentPhase];
+    const ptype = p.type || p.label.toLowerCase();
+    if (ptype === 'work') {
+      playAudioSafe(document.getElementById('audioWork'));
+    } else if (ptype === 'rest') {
+      playAudioSafe(document.getElementById('audioRest'));
+    } else if (ptype === 'relax') {
+      // Optionally play relax audio if you have one
+    } else if (ptype === 'prepare') {
+      // Optionally play prepare audio if you have one
+    }
     timer = setInterval(() => {
       t--;
       const p = phases[currentPhase];
@@ -525,13 +502,28 @@
     resetProgram();
   }
 
-  document.getElementById("startBtn").onclick = function() {
-    if (paused) {
-      startProgram();
-    } else {
-      startProgram();
-    }
-  };
+  // Unlock audio on first button click (Safari iOS workaround)
+  function unlockAllAudio() {
+    if (window._audioUnlocked) return;
+    ['audioWork', 'audioRest', 'audioEnd'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        try {
+          el.volume = 0;
+          el.play().then(function() {
+            el.pause();
+            el.currentTime = 0;
+            el.volume = 1;
+          }).catch(function(){});
+        } catch(e){}
+      }
+    });
+    window._audioUnlocked = true;
+  }
+  document.getElementById("startBtn").addEventListener("click", function(e) {
+    unlockAllAudio();
+    startProgram();
+  });
   document.getElementById("pauseBtn").onclick = pauseProgram;
   document.getElementById("resetBtn").onclick = resetProgram;
 
