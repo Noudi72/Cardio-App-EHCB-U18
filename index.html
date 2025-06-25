@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EHCB Cardio Programme</title>
+  <style>
+    body {
+      background: #181818;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .logo {
+      display: block;
+      margin: 35px auto 14px auto;
+      width: 120px;
+      max-width: 36vw;
+    }
+    .title {
+      text-align: center;
+      color: #ffe028;
+      font-size: 2.2em;
+      letter-spacing: 1.6px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-shadow: 0 2px 10px #0005;
+      text-transform: uppercase;
+    }
+    .info-warmup {
+      max-width: 520px;
+      margin: 24px auto 30px auto;
+      background: #ffe028;
+      color: #d00;
+      font-size: 1.3em;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px #0003;
+      padding: 16px 5vw 16px 5vw;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    }
+    .program-list {
+      max-width: 520px;
+      margin: 0 auto 35px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 23px;
+    }
+    .prog-btn {
+      background: #ffe028;
+      color: #222;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      font-size: 1.33em;
+      letter-spacing: 1.1px;
+      font-weight: bold;
+      border: none;
+      border-radius: 19px;
+      box-shadow: 0 4px 16px #0008;
+      padding: 28px 0 28px 0;
+      transition: background 0.18s, color 0.18s;
+      margin: 0;
+      cursor: pointer;
+      width: 100%;
+      outline: none;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .prog-btn:hover, .prog-btn:focus {
+      background: #d32f2f;
+      color: #fff;
+    }
+    .prog-label {
+      font-size: 0.95em;
+      color: #999;
+      font-weight: 400;
+      text-transform: none;
+      margin-top: 2px;
+    }
+    @media (max-width: 600px) {
+      .logo {
+        margin-top: 22px;
+        width: 74px;
+        max-width: 28vw;
+      }
+      .title {
+        font-size: 1.24em;
+      }
+      .info-warmup {
+        font-size: 1em;
+        margin-top: 14px;
+        padding: 11px 3vw 11px 3vw;
+      }
+      .program-list {
+        max-width: 99vw;
+        gap: 13px;
+      }
+      .prog-btn {
+        font-size: 1.03em;
+        padding: 17px 0 17px 0;
+        border-radius: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="icon-cardio.png" class="logo" alt="EHCB Cardio Logo" />
+  <div class="title">EHCB Cardio Programme</div>
+  <div class="info-warmup">Bitte vorher 10 Min. aufwärmen!</div>
+  <div class="program-list">
+    <button class="prog-btn" onclick="window.location.href='intervall.html'">Intervall</button>
+    <button class="prog-btn" onclick="window.location.href='hiit.html'">HIIT</button>
+    <button class="prog-btn" onclick="window.location.href='vo2max.html'">VO₂max</button>
+    <button class="prog-btn" onclick="window.location.href='kraftausdauer-basis.html'">Kraftausdauer Basis</button>
+    <button class="prog-btn" onclick="window.location.href='grundkondition.html'">Grundkondition</button>
+    <button class="prog-btn" onclick="window.location.href='anaerob-sprints.html'">Anaerob Sprints</button>
+    <button class="prog-btn" onclick="window.location.href='explosiv-antritt.html'">Explosiv-Antritt</button>
+    <button class="prog-btn" onclick="window.location.href='regeneration.html'">Regeneration</button>
+  </div>
+</body>
+</html>
