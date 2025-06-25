@@ -5,6 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EHCB Cardio Programme</title>
   <style>
+    .lang-switch {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+    }
+    .lang-switch button {
+      border: none;
+      background: transparent;
+      font-size: 1.48em;
+      margin-left: 3px;
+      border-radius: 50%;
+      cursor: pointer;
+      outline: none;
+      transition: box-shadow 0.1s;
+      box-shadow: none;
+      padding: 2px 4px;
+    }
+    .lang-switch button:focus,
+    .lang-switch button:hover {
+      box-shadow: 0 0 0 2px #ffe028bb;
+    }
+  </style>
+  <style>
     body {
       background: #181818;
       color: #fff;
@@ -108,22 +134,102 @@
   </style>
 </head>
 <body>
+  <div class="lang-switch">
+    <button data-lang="de" title="Deutsch">🇩🇪</button>
+    <button data-lang="en" title="English">🇬🇧</button>
+    <button data-lang="fr" title="Français">🇫🇷</button>
+  </div>
   <img src="icon-cardio.png" class="logo" alt="EHCB Cardio Logo" />
-  <div class="title">EHCB Cardio Programs</div>
-  <div class="info-warmup" style="margin-bottom:6px;">Please warm up for 10 minutes before starting!</div>
-  <div class="info-warmup" style="background:#fff;border:2px solid #d32f2f;color:#d32f2f;font-size:0.97em;margin-top:0;margin-bottom:22px;">
-    <b>DE:</b> Bitte vor dem Training 10 Minuten aufwärmen!<br>
-    <b>FR:</b> Veuillez vous échauffer pendant 10 minutes avant de commencer!
-  </div>
+  <div class="title" id="page-title">EHCB Cardio Programme</div>
+  <div class="info-warmup" id="warmup-info">Bitte wärme dich 10 Minuten auf, bevor du startest!</div>
   <div class="program-list">
-    <button class="prog-btn" onclick="window.location.href='intervall.html'">Interval</button>
-    <button class="prog-btn" onclick="window.location.href='hiit.html'">HIIT</button>
-    <button class="prog-btn" onclick="window.location.href='vo2max.html'">VO₂max</button>
-    <button class="prog-btn" onclick="window.location.href='kraftausdauer-basis.html'">Strength Endurance (Basic)</button>
-    <button class="prog-btn" onclick="window.location.href='grundkondition.html'">Base Endurance</button>
-    <button class="prog-btn" onclick="window.location.href='anaerob-sprints.html'">Anaerobic Sprints</button>
-    <button class="prog-btn" onclick="window.location.href='explosiv-antritt.html'">Explosive Start</button>
-    <button class="prog-btn" onclick="window.location.href='regeneration.html'">Recovery</button>
+    <button class="prog-btn" onclick="window.location.href='intervall.html'" data-prog="intervall">Intervall</button>
+    <button class="prog-btn" onclick="window.location.href='hiit.html'" data-prog="hiit">HIIT</button>
+    <button class="prog-btn" onclick="window.location.href='vo2max.html'" data-prog="vo2max">VO₂max</button>
+    <button class="prog-btn" onclick="window.location.href='kraftausdauer-basis.html'" data-prog="kraftausdauer">Kraftausdauer (Basis)</button>
+    <button class="prog-btn" onclick="window.location.href='grundkondition.html'" data-prog="grundkondition">Grundlagenausdauer</button>
+    <button class="prog-btn" onclick="window.location.href='anaerob-sprints.html'" data-prog="anaerob">Anaerobe Sprints</button>
+    <button class="prog-btn" onclick="window.location.href='explosiv-antritt.html'" data-prog="explosiv">Explosiver Antritt</button>
+    <button class="prog-btn" onclick="window.location.href='regeneration.html'" data-prog="regeneration">Regeneration</button>
   </div>
+
+  <script>
+    // Übersetzungsdatenbank
+    const translations = {
+      de: {
+        title: "EHCB Cardio Programme",
+        warmup: "Bitte wärme dich 10 Minuten auf, bevor du startest!",
+        progs: {
+          intervall: "Intervall",
+          hiit: "HIIT",
+          vo2max: "VO₂max",
+          kraftausdauer: "Kraftausdauer (Basis)",
+          grundkondition: "Grundlagenausdauer",
+          anaerob: "Anaerobe Sprints",
+          explosiv: "Explosiver Antritt",
+          regeneration: "Regeneration"
+        }
+      },
+      en: {
+        title: "EHCB Cardio Programs",
+        warmup: "Please warm up for 10 minutes before starting!",
+        progs: {
+          intervall: "Interval",
+          hiit: "HIIT",
+          vo2max: "VO₂max",
+          kraftausdauer: "Strength Endurance (Basic)",
+          grundkondition: "Base Endurance",
+          anaerob: "Anaerobic Sprints",
+          explosiv: "Explosive Start",
+          regeneration: "Recovery"
+        }
+      },
+      fr: {
+        title: "Programmes Cardio EHCB",
+        warmup: "Merci de t’échauffer 10 minutes avant de commencer !",
+        progs: {
+          intervall: "Intervalles",
+          hiit: "HIIT",
+          vo2max: "VO₂max",
+          kraftausdauer: "Endurance de force (de base)",
+          grundkondition: "Endurance fondamentale",
+          anaerob: "Sprints anaérobiques",
+          explosiv: "Démarrage explosif",
+          regeneration: "Récupération"
+        }
+      }
+    };
+
+    // Standard: Deutsch
+    let currentLang = 'de';
+
+    function updateLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+      document.getElementById('page-title').textContent = t.title;
+      document.getElementById('warmup-info').textContent = t.warmup;
+      // Programmnamen
+      document.querySelectorAll('.prog-btn').forEach(btn => {
+        const key = btn.getAttribute('data-prog');
+        if (t.progs[key]) {
+          btn.textContent = t.progs[key];
+        }
+      });
+      // html lang-Attribut setzen
+      document.documentElement.lang = lang;
+    }
+
+    // Sprache wechseln bei Klick auf Flagge
+    document.querySelectorAll('.lang-switch button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        updateLanguage(btn.getAttribute('data-lang'));
+      });
+    });
+
+    // Beim Laden: Deutsch setzen
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLanguage('de');
+    });
+  </script>
 </body>
 </html>
