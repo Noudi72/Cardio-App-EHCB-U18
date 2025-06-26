@@ -1,0 +1,20 @@
+{
+  "name": "EHCB Cardio",
+  "short_name": "Cardio",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#181818",
+  "theme_color": "#ffe028",
+  "icons": [
+    {
+      "src": "icon-cardio.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-cardio.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
