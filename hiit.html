@@ -1,190 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>HIIT</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #222;
-    color: #eee;
-    margin: 0;
-    padding: 0;
-  }
-  header {
-    background: #d32f2f;
-    padding: 1rem;
-    text-align: center;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 2rem;
-  }
-  main {
-    max-width: 600px;
-    margin: 1rem auto;
-    padding: 1rem;
-    background: #333;
-    border-radius: 8px;
-  }
-  p.info {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
-  p.desc {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin-bottom: 2rem;
-  }
-  form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  label {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.9rem;
-  }
-  input[type=number] {
-    padding: 0.3rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-  }
-  button {
-    grid-column: span 2;
-    background: #d32f2f;
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    font-size: 1.1rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:disabled {
-    background: #a53939;
-    cursor: not-allowed;
-  }
-  .timer {
-    font-size: 3rem;
-    text-align: center;
-    margin: 2rem 0;
-  }
-  .phase {
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  .audio-controls {
-    text-align: center;
-    margin-top: 1rem;
-  }
-  .audio-controls button {
-    background: #444;
-    margin: 0 0.5rem;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 4px;
-  }
-  /* Modal styles */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    justify-content: center;
-    align-items: center;
-  }
-  .modal-content {
-    background: #444;
-    padding: 1.5rem;
-    border-radius: 8px;
-    max-width: 400px;
-    width: 90%;
-    color: #eee;
-  }
-  .modal-content h2 {
-    margin-top: 0;
-    color: #d32f2f;
-  }
-  .modal-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-  }
-  .modal-content th, .modal-content td {
-    border: 1px solid #666;
-    padding: 0.5rem;
-    text-align: center;
-  }
-  .modal-content th {
-    background: #d32f2f;
-    color: white;
-  }
-  .modal-close {
-    background: #d32f2f;
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    float: right;
-  }
-  @media (max-width: 480px) {
-    form {
-      grid-template-columns: 1fr;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HIIT</title>
+  <link rel="icon" href="icon-cardio.png">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      background: #181818;
+      color: #fff;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
-    button {
-      grid-column: span 1;
+    .cardio-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 18px;
+      margin-bottom: 0;
     }
-  }
-</style>
+    .cardio-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 16px #0006;
+      background: #fff;
+      object-fit: contain;
+    }
+    .cardio-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #ffe028;
+      margin-bottom: 0.4rem;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 12px #000a;
+    }
+    .cardio-desc {
+      font-size: 1.15rem;
+      color: #ffe028;
+      margin-bottom: 2px;
+      margin-top: 0.2rem;
+      text-align: center;
+      font-weight: 600;
+    }
+    .cardio-subdesc {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 14px;
+      margin-top: 0.25rem;
+      text-align: center;
+    }
+    .generator-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 1rem 0 0.8rem 0;
+    }
+    .generator-card {
+      background: #181818;
+      color: #ffe028;
+      border: 2px solid #ffe028;
+      font-weight: bold;
+      border-radius: 16px;
+      padding: 0.65rem 1.1rem;
+      min-width: 110px;
+      font-size: 1.18rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .generator-card label {
+      font-size: 0.97rem;
+      color: #ffe028;
+      font-weight: 500;
+      margin-bottom: 0.2em;
+    }
+    .generator-card input {
+      background: #111;
+      color: #ffe028;
+      font-size: 1.16rem;
+      border: none;
+      text-align: center;
+      width: 54px;
+      border-radius: 8px;
+      padding: 2px 4px;
+      font-weight: bold;
+    }
+    .generator-btn-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 1.1rem;
+    }
+    .cardio-btn-main, .cardio-btn-info {
+      background: #d32f2f;
+      color: #fff;
+      font-size: 1.33rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      padding: 0.68rem 2.3rem;
+      margin: 0;
+      cursor: pointer;
+      box-shadow: 0 2px 14px #0006;
+      transition: background 0.15s;
+    }
+    .cardio-btn-main:hover, .cardio-btn-info:hover {
+      background: #b71c1c;
+    }
+    .cardio-btn-info {
+      background: #444;
+      color: #ffe028;
+      margin-left: 0;
+      min-width: 130px;
+    }
+    @media (max-width: 700px) {
+      .generator-btn-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .cardio-btn-main, .cardio-btn-info {
+        width: 90vw;
+        min-width: 90vw;
+        font-size: 1.1rem;
+        padding: 0.7rem 0;
+      }
+      .generator-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      .generator-card {
+        width: 88vw;
+        min-width: 0;
+        padding: 0.65rem 1.2rem;
+        font-size: 1.09rem;
+      }
+    }
+    .timer-main-card {
+      background: #ffa800;
+      border-radius: 48px;
+      box-shadow: 0 4px 38px #000c;
+      max-width: 440px;
+      margin: 0 auto 1.5rem auto;
+      padding: 1.1rem 0.8rem 1.8rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 330px;
+    }
+    .timer-phase {
+      margin-top: 0.1em;
+      font-size: 2.6rem;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 2px 8px #0008;
+      letter-spacing: 2px;
+    }
+    .timer-intensity {
+      font-size: 1.34rem;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 0.5em;
+      margin-top: 0.1em;
+    }
+    .timer-time {
+      font-size: 4.3rem;
+      font-family: "Consolas", monospace, Arial;
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 0.2em;
+      text-shadow: 0 2px 8px #000a;
+      line-height: 1.09em;
+    }
+    .timer-params {
+      font-size: 1.35rem;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 0.1em;
+      letter-spacing: 1px;
+    }
+    .timer-phasecount {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #555;
+      margin-top: 0.8em;
+      text-shadow: none;
+    }
+    @media (max-width: 650px) {
+      .timer-main-card {
+        border-radius: 28px;
+        max-width: 99vw;
+        padding: 1.1rem 0.2rem 1.2rem 0.2rem;
+      }
+      .timer-phase { font-size: 2.04rem;}
+      .timer-intensity { font-size: 1.05rem;}
+      .timer-time { font-size: 2.85rem;}
+      .timer-params { font-size: 1.02rem;}
+      .timer-phasecount { font-size: 1.03rem;}
+    }
+    .cardio-btn-bottom-row {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      margin: 0.9em 0 0 0;
+    }
+    .cardio-btn-control {
+      background: #d32f2f;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      padding: 0.75em 2em;
+      margin: 0 0 0 0;
+      min-width: 140px;
+      cursor: pointer;
+      box-shadow: 0 2px 16px #0004;
+      transition: background 0.17s;
+    }
+    .cardio-btn-control:hover {
+      background: #b71c1c;
+    }
+    @media (max-width: 650px) {
+      .cardio-btn-bottom-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .cardio-btn-control {
+        width: 90vw;
+        min-width: 0;
+        font-size: 1.12rem;
+        padding: 0.8em 0;
+      }
+    }
+    .info-modal-bg {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+    }
+    .info-modal-card {
+      background: #232323;
+      color: #ffe028;
+      padding: 2.3em 1.2em 1.2em 1.2em;
+      border-radius: 24px;
+      max-width: 410px;
+      width: 98vw;
+      box-shadow: 0 6px 64px #000a;
+      position: relative;
+    }
+    .info-modal-card h2 {
+      color: #ffe028;
+      margin-top: 0.15em;
+      font-size: 2.2rem;
+      margin-bottom: 0.3em;
+      text-align: center;
+      letter-spacing: 1.5px;
+    }
+    .info-modal-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.11rem;
+      background: #232323;
+      margin-bottom: 1.4em;
+    }
+    .info-modal-card th, .info-modal-card td {
+      border: 1.2px solid #ffe02855;
+      padding: 0.48em 0.3em;
+      text-align: center;
+    }
+    .info-modal-card th {
+      background: #444;
+      color: #ffe028;
+      font-size: 1.13rem;
+      font-weight: bold;
+    }
+    .info-modal-card td {
+      background: #222;
+      color: #fff;
+      font-weight: bold;
+    }
+    .info-modal-close {
+      position: absolute;
+      right: 12px; top: 10px;
+      font-size: 2.1rem;
+      background: none;
+      border: none;
+      color: #ffe028;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 2px 10px;
+      border-radius: 10px;
+    }
+    .info-modal-close:hover {
+      background: #d32f2f22;
+    }
+    @media (max-width: 520px) {
+      .info-modal-card {
+        padding: 1.2em 0.3em 0.8em 0.3em;
+        max-width: 99vw;
+      }
+      .info-modal-card h2 {
+        font-size: 1.22rem;
+      }
+      .info-modal-card table {
+        font-size: 0.99rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>HIIT</h1>
-</header>
-<main>
-  <p class="info">High-intensity interval training for maximum fat burning and performance.</p>
-  <p class="desc">Efficient intervals: 10 min warm up, 10× (45s work / 60s rest), 10 min cool down. Adjust sets, cycles and times for your needs.</p>
-  <form id="intervalForm" aria-label="HIIT interval settings">
-    <label for="prepare">Prepare (seconds):
-      <input type="number" id="prepare" name="prepare" min="0" max="600" value="20" />
-    </label>
-    <label for="sets">Sets:
-      <input type="number" id="sets" name="sets" min="1" max="10" value="1" />
-    </label>
-    <label for="cycles">Cycles/Set:
-      <input type="number" id="cycles" name="cycles" min="1" max="20" value="10" />
-    </label>
-    <label for="work">Work (seconds):
-      <input type="number" id="work" name="work" min="1" max="600" value="45" />
-    </label>
-    <label for="rest">Rest (seconds):
-      <input type="number" id="rest" name="rest" min="1" max="600" value="60" />
-    </label>
-    <label for="relax">Relax (seconds):
-      <input type="number" id="relax" name="relax" min="0" max="3600" value="600" />
-    </label>
-    <button type="submit" id="startBtn">Start</button>
-  </form>
-  <div class="timer" aria-live="polite" aria-atomic="true" id="timerDisplay">00:00</div>
-  <div class="phase" id="phaseDisplay" aria-live="polite" aria-atomic="true"></div>
-  <div class="audio-controls">
-    <button id="soundOnBtn" aria-pressed="false" aria-label="Enable sound">Sound On</button>
-    <button id="soundOffBtn" aria-pressed="true" aria-label="Disable sound" hidden>Sound Off</button>
-    <button id="infoBtn" aria-label="Show phase information">Phase Info</button>
+<div class="cardio-header">
+  <img src="icon-cardio.png" alt="Cardio Logo" class="cardio-logo" />
+  <div class="cardio-title">HIIT</div>
+  <div class="cardio-desc">High-intensity interval training for max fat burning & performance.</div>
+  <div class="cardio-subdesc">Efficient intervals: 10 min warm up, 10× (45s work / 60s rest), 10 min cool down.<br>Adjust sets, cycles and times for your needs.</div>
+</div>
+<div class="generator-row">
+  <div class="generator-card">
+    <label for="prepare">Prepare</label>
+    <input type="number" id="prepare" value="20" min="0" max="120" />
   </div>
-</main>
-<div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle" aria-describedby="infoModalDesc">
-  <div class="modal-content">
-    <button class="modal-close" id="modalCloseBtn" aria-label="Close phase information modal">&times;</button>
-    <h2 id="infoModalTitle">Phase Information</h2>
-    <p id="infoModalDesc">Details about intensity, RPM and heart rate for each phase.</p>
+  <div class="generator-card">
+    <label for="sets">Sets</label>
+    <input type="number" id="sets" value="1" min="1" max="10" />
+  </div>
+  <div class="generator-card">
+    <label for="cycles">Cycles/Set</label>
+    <input type="number" id="cycles" value="10" min="1" max="20" />
+  </div>
+  <div class="generator-card">
+    <label for="work">Work</label>
+    <input type="number" id="work" value="45" min="1" max="300" />
+  </div>
+  <div class="generator-card">
+    <label for="rest">Rest</label>
+    <input type="number" id="rest" value="60" min="1" max="300" />
+  </div>
+  <div class="generator-card">
+    <label for="relax">Relax</label>
+    <input type="number" id="relax" value="600" min="0" max="3600" />
+  </div>
+</div>
+<div class="generator-btn-row">
+  <button class="cardio-btn-main" id="generateBtn">Generate</button>
+  <button class="cardio-btn-info" id="infoBtn">Information</button>
+</div>
+
+<div class="timer-main-card" id="timerCard">
+  <div class="timer-phase" id="phaseName">PREPARE</div>
+  <div class="timer-intensity" id="phaseIntensity"></div>
+  <div class="timer-time" id="timerDisplay">00:20</div>
+  <div class="timer-params" id="timerParams"></div>
+  <div class="timer-phasecount" id="phaseCount"></div>
+</div>
+<div class="cardio-btn-bottom-row">
+  <button class="cardio-btn-control" id="startBtn">Start</button>
+  <button class="cardio-btn-control" id="pauseBtn" disabled>Pause</button>
+  <button class="cardio-btn-control" id="resetBtn" disabled>Reset</button>
+</div>
+
+<!-- Info Modal -->
+<div class="info-modal-bg" id="modalBg" style="display:none;">
+  <div class="info-modal-card">
+    <button class="info-modal-close" id="closeModalBtn" title="Close">&times;</button>
+    <h2>HIIT Phase Information</h2>
     <table>
       <thead>
         <tr>
@@ -224,163 +413,110 @@
   </div>
 </div>
 <script>
-  (function(){
-    const form = document.getElementById('intervalForm');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const phaseDisplay = document.getElementById('phaseDisplay');
-    const startBtn = document.getElementById('startBtn');
-    const soundOnBtn = document.getElementById('soundOnBtn');
-    const soundOffBtn = document.getElementById('soundOffBtn');
-    const infoBtn = document.getElementById('infoBtn');
-    const infoModal = document.getElementById('infoModal');
-    const modalCloseBtn = document.getElementById('modalCloseBtn');
-
-    let timer = null;
-    let totalSeconds = 0;
-    let currentPhase = 0;
-    let phases = [];
-    let isRunning = false;
-    let soundEnabled = true;
-
-    // Audio setup
-    const beepLow = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA='); // placeholder silent audio
-    const beepHigh = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA='); // placeholder silent audio
-
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+const PHASES = {
+  Prepare:  { label: "PREPARE", color: "#ffa800", intensity: "Low", rpm: "70-80", hr: "50-60" },
+  Work:     { label: "WORK", color: "#d32f2f", intensity: "Max", rpm: "100-110", hr: "85-100" },
+  Rest:     { label: "REST", color: "#388e3c", intensity: "Low", rpm: "60-70", hr: "50-60" },
+  Relax:    { label: "RELAX", color: "#1976d2", intensity: "Low", rpm: "60", hr: "40-50" },
+};
+let sequence = [];
+let phaseIdx = 0, secondsLeft = 0, running = false, paused = false, timer = null;
+const $ = id => document.getElementById(id);
+function pad2(n) { return n < 10 ? '0'+n : n; }
+function showTimer() {
+  const cur = sequence[phaseIdx];
+  const ph = PHASES[cur.type];
+  $('timerCard').style.background = ph.color;
+  $('phaseName').textContent = ph.label;
+  $('phaseIntensity').textContent = `Intensity: ${ph.intensity}`;
+  $('timerDisplay').textContent = pad2(Math.floor(secondsLeft/60))+":"+pad2(secondsLeft%60);
+  $('timerParams').textContent = `RPM: ${ph.rpm}   HR: ${ph.hr}%`;
+  $('phaseCount').textContent = `Phase ${phaseIdx+1} of ${sequence.length}`;
+}
+function buildSequence() {
+  let prepare = +$('prepare').value, sets = +$('sets').value, cycles = +$('cycles').value;
+  let work = +$('work').value, rest = +$('rest').value, relax = +$('relax').value;
+  let arr = [];
+  if(prepare > 0) arr.push({type:"Prepare", dur:prepare});
+  for(let s=0;s<sets;s++) {
+    for(let c=0;c<cycles;c++) {
+      arr.push({type:"Work", dur:work});
+      arr.push({type:"Rest", dur:rest});
     }
-
-    function buildPhases(prepare, sets, cycles, work, rest, relax) {
-      const phasesArr = [];
-      if(prepare > 0) phasesArr.push({name:'Prepare', duration:prepare});
-      for(let s=0; s<sets; s++) {
-        for(let c=0; c<cycles; c++) {
-          phasesArr.push({name:'Work', duration: work});
-          phasesArr.push({name:'Rest', duration: rest});
+    if(s < sets-1 && relax > 0) arr.push({type:"Relax", dur:relax});
+  }
+  return arr;
+}
+function startTimer() {
+  if(running) return;
+  running = true; paused = false;
+  $('startBtn').disabled = true;
+  $('pauseBtn').disabled = false;
+  $('resetBtn').disabled = false;
+  phaseIdx = 0; sequence = buildSequence();
+  secondsLeft = sequence[0].dur;
+  showTimer();
+  timer = setInterval(()=>{
+    if(!paused) {
+      if(--secondsLeft < 0) {
+        phaseIdx++;
+        if(phaseIdx >= sequence.length) {
+          clearInterval(timer);
+          running = false;
+          $('startBtn').disabled = false;
+          $('pauseBtn').disabled = true;
+          $('resetBtn').disabled = true;
+          $('phaseName').textContent = "DONE!";
+          $('phaseIntensity').textContent = "";
+          $('timerDisplay').textContent = "00:00";
+          $('timerParams').textContent = "";
+          $('phaseCount').textContent = "";
+          return;
         }
-      }
-      if(relax > 0) phasesArr.push({name:'Relax', duration: relax});
-      return phasesArr;
-    }
-
-    function getPhaseSound(phaseName) {
-      // Placeholder: different beep for work phase
-      if(phaseName === 'Work') return beepHigh;
-      return beepLow;
-    }
-
-    function updatePhaseDisplay(name) {
-      phaseDisplay.textContent = name;
-    }
-
-    function playBeep(phaseName) {
-      if(!soundEnabled) return;
-      const sound = getPhaseSound(phaseName);
-      if(sound) {
-        sound.pause();
-        sound.currentTime = 0;
-        sound.play();
-      }
-    }
-
-    function startTimer() {
-      if(isRunning) return;
-      const prepare = parseInt(form.prepare.value,10);
-      const sets = parseInt(form.sets.value,10);
-      const cycles = parseInt(form.cycles.value,10);
-      const work = parseInt(form.work.value,10);
-      const rest = parseInt(form.rest.value,10);
-      const relax = parseInt(form.relax.value,10);
-
-      phases = buildPhases(prepare, sets, cycles, work, rest, relax);
-      if(phases.length === 0) return;
-
-      currentPhase = 0;
-      totalSeconds = phases[0].duration;
-      updatePhaseDisplay(phases[0].name);
-      timerDisplay.textContent = formatTime(totalSeconds);
-      playBeep(phases[0].name);
-
-      isRunning = true;
-      startBtn.disabled = true;
-      form.querySelectorAll('input').forEach(i => i.disabled = true);
-
-      timer = setInterval(() => {
-        totalSeconds--;
-        timerDisplay.textContent = formatTime(totalSeconds);
-        if(totalSeconds <= 0) {
-          currentPhase++;
-          if(currentPhase >= phases.length) {
-            clearInterval(timer);
-            isRunning = false;
-            startBtn.disabled = false;
-            form.querySelectorAll('input').forEach(i => i.disabled = false);
-            updatePhaseDisplay('Done');
-            return;
-          }
-          totalSeconds = phases[currentPhase].duration;
-          updatePhaseDisplay(phases[currentPhase].name);
-          playBeep(phases[currentPhase].name);
-          timerDisplay.textContent = formatTime(totalSeconds);
-        }
-      }, 1000);
-    }
-
-    function stopTimer() {
-      if(timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-      isRunning = false;
-      startBtn.disabled = false;
-      form.querySelectorAll('input').forEach(i => i.disabled = false);
-      updatePhaseDisplay('');
-      timerDisplay.textContent = '00:00';
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if(!isRunning) {
-        startTimer();
+        secondsLeft = sequence[phaseIdx].dur;
+        showTimer();
       } else {
-        stopTimer();
+        showTimer();
       }
-    });
-
-    soundOnBtn.addEventListener('click', () => {
-      soundEnabled = true;
-      soundOnBtn.hidden = true;
-      soundOffBtn.hidden = false;
-      soundOnBtn.setAttribute('aria-pressed', 'true');
-      soundOffBtn.setAttribute('aria-pressed', 'false');
-    });
-    soundOffBtn.addEventListener('click', () => {
-      soundEnabled = false;
-      soundOnBtn.hidden = false;
-      soundOffBtn.hidden = true;
-      soundOnBtn.setAttribute('aria-pressed', 'false');
-      soundOffBtn.setAttribute('aria-pressed', 'true');
-    });
-
-    infoBtn.addEventListener('click', () => {
-      infoModal.style.display = 'flex';
-      modalCloseBtn.focus();
-    });
-
-    modalCloseBtn.addEventListener('click', () => {
-      infoModal.style.display = 'none';
-      infoBtn.focus();
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape' && infoModal.style.display === 'flex') {
-        infoModal.style.display = 'none';
-        infoBtn.focus();
-      }
-    });
-  })();
+    }
+  }, 1000);
+}
+function pauseTimer() {
+  paused = !paused;
+  $('pauseBtn').textContent = paused ? "Resume" : "Pause";
+}
+function resetTimer() {
+  if(timer) clearInterval(timer);
+  running = false; paused = false;
+  $('startBtn').disabled = false;
+  $('pauseBtn').disabled = true;
+  $('resetBtn').disabled = true;
+  phaseIdx = 0;
+  sequence = buildSequence();
+  secondsLeft = sequence[0].dur;
+  showTimer();
+}
+$('generateBtn').onclick = () => {
+  resetTimer();
+};
+$('startBtn').onclick = () => startTimer();
+$('pauseBtn').onclick = () => pauseTimer();
+$('resetBtn').onclick = () => resetTimer();
+window.onload = () => {
+  sequence = buildSequence();
+  phaseIdx = 0;
+  secondsLeft = sequence[0].dur;
+  showTimer();
+};
+$('infoBtn').onclick = () => {
+  $('modalBg').style.display = 'flex';
+};
+$('closeModalBtn').onclick = () => {
+  $('modalBg').style.display = 'none';
+};
+window.onkeydown = e => {
+  if(e.key === 'Escape') $('modalBg').style.display = 'none';
+};
 </script>
 </body>
 </html>
