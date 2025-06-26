@@ -319,6 +319,15 @@
   </style>
 </head>
 <body>
+<audio id="audioWork" src="start_work.m4a"></audio>
+<audio id="audioRest" src="Rest.m4a"></audio>
+<audio id="audioEnd" src="Session Complete.m4a"></audio>
+<!-- Back button top left -->
+<a href="index.html" id="backBtn" style="position:absolute;left:14px;top:16px;z-index:10;text-decoration:none;">
+  <button style="background:#d32f2f;color:#fff;font-size:1.18rem;font-weight:bold;border:none;border-radius:16px;padding:0.48em 1.7em;box-shadow:0 2px 14px #0006;cursor:pointer;transition:background 0.15s;">
+    &#8592; Back
+  </button>
+</a>
 <div class="cardio-header">
   <img src="icon-cardio.png" alt="Cardio Logo" class="cardio-logo" />
   <div class="cardio-title">HIIT</div>
@@ -356,6 +365,7 @@
   <button class="cardio-btn-info" id="infoBtn">Information</button>
 </div>
 
+<!-- Main timer card, visually consistent with intervall.html -->
 <div class="timer-main-card" id="timerCard">
   <div class="timer-phase" id="phaseName">PREPARE</div>
   <div class="timer-intensity" id="phaseIntensity"></div>
@@ -381,6 +391,7 @@
           <th>Intensity</th>
           <th>RPM</th>
           <th>HR (%)</th>
+          <th>Duration (s)</th>
         </tr>
       </thead>
       <tbody>
@@ -389,27 +400,33 @@
           <td>Low</td>
           <td>70-80</td>
           <td>50-60</td>
+          <td>20</td>
         </tr>
         <tr>
           <td>Work</td>
           <td>Max</td>
           <td>100-110</td>
           <td>85-100</td>
+          <td>45</td>
         </tr>
         <tr>
           <td>Rest</td>
           <td>Low</td>
           <td>60-70</td>
           <td>50-60</td>
+          <td>60</td>
         </tr>
         <tr>
           <td>Relax</td>
           <td>Low</td>
           <td>60</td>
           <td>40-50</td>
+          <td>600</td>
         </tr>
       </tbody>
     </table>
+</body>
+</html>
   </div>
 </div>
 <script>
@@ -471,7 +488,15 @@ function startTimer() {
           $('timerDisplay').textContent = "00:00";
           $('timerParams').textContent = "";
           $('phaseCount').textContent = "";
+          document.getElementById('audioEnd').play().catch(()=>{});
           return;
+        }
+        if(phaseIdx > 0) {
+          if(sequence[phaseIdx].type === "Work") {
+            document.getElementById('audioWork').play().catch(()=>{});
+          } else if(sequence[phaseIdx].type === "Rest") {
+            document.getElementById('audioRest').play().catch(()=>{});
+          }
         }
         secondsLeft = sequence[phaseIdx].dur;
         showTimer();
@@ -484,6 +509,13 @@ function startTimer() {
 function pauseTimer() {
   paused = !paused;
   $('pauseBtn').textContent = paused ? "Resume" : "Pause";
+  if(!paused && running && phaseIdx > 0 && phaseIdx < sequence.length) {
+    if(sequence[phaseIdx].type === "Work") {
+      document.getElementById('audioWork').play().catch(()=>{});
+    } else if(sequence[phaseIdx].type === "Rest") {
+      document.getElementById('audioRest').play().catch(()=>{});
+    }
+  }
 }
 function resetTimer() {
   if(timer) clearInterval(timer);
