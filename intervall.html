@@ -414,7 +414,7 @@
 <script>
   // ---- Default Phases Generator ----
   function generatePhases(sets, cycles, work, rest, relax, prepare) {
-    const arr = [{label: "Prepare", desc: "Get Ready", duration: prepare, type: "prepare", intensity: "", rpm: "-", hr: "-"}];
+    const arr = [{label: "Prepare", desc: "Get Ready", duration: prepare, type: "prepare", intensity: "Low", rpm: "60-70", hr: "50-60"}];
     for (let s = 1; s <= sets; s++) {
       for (let c = 1; c <= cycles; c++) {
         arr.push({label: "Work", desc: "High", duration: work, type: "work", intensity: "High", rpm: "100-110", hr: "85-100"});
