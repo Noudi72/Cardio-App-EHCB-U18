@@ -325,7 +325,18 @@
   <label>Work: <input type="number" id="workInput" min="5" max="120" value="30"></label>
   <label>Rest: <input type="number" id="restInput" min="5" max="120" value="15"></label>
   <label>Relax: <input type="number" id="relaxInput" min="10" max="300" value="120"></label>
+  <label>Prepare: <input type="number" id="prepareInput" min="5" max="60" value="20"></label>
   <button onclick="autogenPhases()">Generate</button>
+  <button id="infoBtn" aria-label="Show program table" type="button" style="background:#232323; color:#ffe028; border:none; border-radius:50%; font-size:1.22em; width:36px; height:36px; margin-left:13px; vertical-align:middle; cursor:pointer; transition:box-shadow 0.15s; box-shadow: 0 1px 6px #0002;">ℹ️</button>
+</div>
+
+<!-- Modal Overlay for Program Table -->
+<div id="programModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.66); overflow:auto;">
+  <div id="programModalCard" style="background:#fff; color:#222; max-width:540px; margin:40px auto 0 auto; border-radius:22px; box-shadow:0 8px 40px #0009; padding:28px 5vw 30px 5vw; font-size:1.14em; position:relative; width:98vw;">
+    <button id="closeModalBtn" aria-label="Back to program" style="background:#d32f2f; color:#fff; border-radius:50%; border:none; font-size:1.25em; width:36px; height:36px; float:right; margin-top:-20px; margin-right:-16px; cursor:pointer;">✕</button>
+    <h2 style="margin-top:0; color:#d32f2f; font-family:'Arial Rounded MT Bold',Arial,sans-serif; font-size:1.25em; text-align:center; letter-spacing:2px;">Program Table</h2>
+    <div id="programTableContainer"></div>
+  </div>
 </div>
 <div class="phaseBox prepare" id="phaseBox">
   <div class="phaseLabel" id="phaseLabel">Prepare</div>
@@ -341,8 +352,8 @@
 </div>
 <script>
   // ---- Default Phases Generator ----
-  function generatePhases(sets, cycles, work, rest, relax) {
-    const arr = [{label: "Prepare", desc: "Get Ready", duration: 30, type: "prepare", intensity: "", rpm: "-", hr: "-"}];
+  function generatePhases(sets, cycles, work, rest, relax, prepare) {
+    const arr = [{label: "Prepare", desc: "Get Ready", duration: prepare, type: "prepare", intensity: "", rpm: "-", hr: "-"}];
     for (let s = 1; s <= sets; s++) {
       for (let c = 1; c <= cycles; c++) {
         arr.push({label: "Work", desc: "High", duration: work, type: "work", intensity: "High", rpm: "100-110", hr: "85-100"});
@@ -354,8 +365,8 @@
   }
   // ---- End Generator ----
 
-  let sets = 4, cycles = 8, work = 30, rest = 15, relax = 120;
-  let phases = generatePhases(sets, cycles, work, rest, relax);
+  let sets = 4, cycles = 8, work = 30, rest = 15, relax = 120, prepare = 20;
+  let phases = generatePhases(sets, cycles, work, rest, relax, prepare);
   let currentPhase = 0, timer = null, running = false, paused = false, t = phases[0].duration;
   let workAudioFlag = false;
 
@@ -498,9 +509,68 @@
     work = Math.max(5, parseInt(document.getElementById('workInput').value));
     rest = Math.max(5, parseInt(document.getElementById('restInput').value));
     relax = Math.max(10, parseInt(document.getElementById('relaxInput').value));
-    phases = generatePhases(sets, cycles, work, rest, relax);
+    prepare = Math.max(5, Math.min(60, parseInt(document.getElementById('prepareInput').value)));
+    phases = generatePhases(sets, cycles, work, rest, relax, prepare);
     resetProgram();
   }
+  // ----------- Modal Program Table Logic -----------
+  function showProgramModal() {
+    // Hide all except backBtn and modal
+    document.querySelector('.autogen-controls').style.display = "none";
+    document.querySelector('.info-text').style.display = "none";
+    document.querySelector('.desc').style.display = "none";
+    document.querySelector('.logo').style.display = "none";
+    document.getElementById('phaseBox').style.display = "none";
+    document.getElementById('cardioButtonsRow').style.display = "none";
+    document.getElementById('programModal').style.display = "block";
+    // Generate table
+    generateProgramTable();
+  }
+
+  function closeProgramModal() {
+    document.querySelector('.autogen-controls').style.display = "";
+    document.querySelector('.info-text').style.display = "";
+    document.querySelector('.desc').style.display = "";
+    document.querySelector('.logo').style.display = "";
+    document.getElementById('phaseBox').style.display = "";
+    document.getElementById('cardioButtonsRow').style.display = "";
+    document.getElementById('programModal').style.display = "none";
+  }
+
+  function generateProgramTable() {
+    // Use current phases
+    const container = document.getElementById('programTableContainer');
+    if (!container) return;
+    let table = '<div style="overflow-x:auto;"><table style="border-collapse:collapse; width:100%; margin:0 auto; font-size:1.07em; background:#fff; color:#222; border-radius:14px; box-shadow:0 1px 6px #0002;">';
+    table += '<thead><tr style="background:#ffe028; color:#222; font-weight:bold;">';
+    table += '<th style="padding:8px 6px;">#</th><th style="padding:8px 6px;">Type</th><th style="padding:8px 6px;">Duration (s)</th><th style="padding:8px 6px;">Intensity</th><th style="padding:8px 6px;">RPM</th><th style="padding:8px 6px;">HR%</th>';
+    table += '</tr></thead><tbody>';
+    for (let i = 0; i < phases.length; ++i) {
+      const p = phases[i];
+      table += `<tr${i===0?' style="background:#ffe02822;"':''}>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${i+1}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.label}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.duration}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.intensity||'-'}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.rpm||'-'}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.hr||'-'}${typeof p.hr==='string'&&p.hr.match(/%$/)?'':(p.hr!=='-'?'%':'')}</td>`;
+      table += '</tr>';
+    }
+    table += '</tbody></table></div>';
+    container.innerHTML = table;
+  }
+
+  // Setup Info button and modal close
+  document.addEventListener("DOMContentLoaded", function() {
+    var infoBtn = document.getElementById('infoBtn');
+    if (infoBtn) infoBtn.onclick = showProgramModal;
+    var closeBtn = document.getElementById('closeModalBtn');
+    if (closeBtn) closeBtn.onclick = closeProgramModal;
+    // Close modal on click outside card
+    document.getElementById('programModal').addEventListener('click', function(e){
+      if (e.target === this) closeProgramModal();
+    });
+  });
 
   // Unlock audio on first button click (Safari iOS workaround)
   function unlockAllAudio() {
@@ -547,3 +617,56 @@
 <audio id="audioEnd" src="Session Complete.m4a"></audio>
 </body>
 </html>
+  // Responsive styling for modal and info button
+  (function() {
+    var style = document.createElement('style');
+    style.innerHTML = `
+      @media (max-width: 700px) {
+        #programModalCard {
+          max-width: 98vw !important;
+          width: 98vw !important;
+          padding: 18px 2vw 18px 2vw !important;
+          font-size: 1.11em !important;
+        }
+        #closeModalBtn {
+          width: 44px !important;
+          height: 44px !important;
+          font-size: 1.35em !important;
+          margin-top: -24px !important;
+          margin-right: -12px !important;
+        }
+        #programTableContainer table th, #programTableContainer table td {
+          font-size: 1.09em !important;
+          padding: 9px 4px !important;
+        }
+      }
+      @media (max-width: 480px) {
+        #programModalCard {
+          max-width: 99vw !important;
+          width: 99vw !important;
+          padding: 8px 1vw 12px 1vw !important;
+          font-size: 1.04em !important;
+        }
+        #closeModalBtn {
+          width: 48px !important;
+          height: 48px !important;
+          font-size: 1.5em !important;
+          margin-top: -18px !important;
+          margin-right: -7px !important;
+        }
+        #programTableContainer table th, #programTableContainer table td {
+          font-size: 1.12em !important;
+          padding: 10px 2px !important;
+        }
+      }
+      #infoBtn:active, #infoBtn:focus {
+        box-shadow: 0 1px 10px #ffe028aa;
+        outline: none;
+      }
+      #closeModalBtn:active, #closeModalBtn:focus {
+        box-shadow: 0 1px 10px #d32f2faa;
+        outline: none;
+      }
+    `;
+    document.head.appendChild(style);
+  })();
