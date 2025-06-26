@@ -426,16 +426,17 @@
   </div>
 </div>
 <script>
+// --- 1:1 Kopie der intervall.html-Logik, HIIT-Werte/Phasen angepasst ---
 const PHASES = {
-  Prepare:  { label: "PREPARE", color: "#ffa800", intensity: "Low", rpm: "70–80", hr: "50–60" },
-  Work:     { label: "WORK", color: "#d32f2f", intensity: "Max", rpm: "100–110", hr: "85–100" },
-  Rest:     { label: "REST", color: "#388e3c", intensity: "Low", rpm: "60–70", hr: "50–60" },
-  Relax:    { label: "RELAX", color: "#1976d2", intensity: "Low", rpm: "60", hr: "40–50" },
+  Prepare: { label: "PREPARE", color: "#ffa800", intensity: "Low", rpm: "70–80", hr: "50–60" },
+  Work:    { label: "WORK", color: "#d32f2f", intensity: "Max", rpm: "100–110", hr: "85–100" },
+  Rest:    { label: "REST", color: "#388e3c", intensity: "Low", rpm: "60–70", hr: "50–60" },
+  Relax:   { label: "RELAX", color: "#1976d2", intensity: "Low", rpm: "60", hr: "40–50" }
 };
 let sequence = [];
 let phaseIdx = 0, secondsLeft = 0, running = false, paused = false, timer = null;
 const $ = id => document.getElementById(id);
-function pad2(n) { return n < 10 ? '0'+n : n; }
+function pad2(n) { return n < 10 ? "0"+n : n; }
 function showTimer() {
   const cur = sequence[phaseIdx];
   const ph = PHASES[cur.type];
@@ -451,8 +452,8 @@ function buildSequence() {
   let work = +$('work').value, rest = +$('rest').value, relax = +$('relax').value;
   let arr = [];
   if(prepare > 0) arr.push({type:"Prepare", dur:prepare});
-  for(let s=0;s<sets;s++) {
-    for(let c=0;c<cycles;c++) {
+  for(let s=0; s<sets; s++) {
+    for(let c=0; c<cycles; c++) {
       arr.push({type:"Work", dur:work});
       arr.push({type:"Rest", dur:rest});
     }
@@ -469,6 +470,12 @@ function startTimer() {
   phaseIdx = 0; sequence = buildSequence();
   secondsLeft = sequence[0].dur;
   showTimer();
+  // Work-Audio am Anfang abspielen, falls erster Phase Work ist
+  if(sequence[0].type === "Work") {
+    document.getElementById('audioWork').play().catch(()=>{});
+  } else if(sequence[0].type === "Rest") {
+    document.getElementById('audioRest').play().catch(()=>{});
+  }
   timer = setInterval(()=>{
     if(!paused) {
       if(--secondsLeft < 0) {
@@ -487,12 +494,11 @@ function startTimer() {
           document.getElementById('audioEnd').play().catch(()=>{});
           return;
         }
-        if(phaseIdx > 0) {
-          if(sequence[phaseIdx].type === "Work") {
-            document.getElementById('audioWork').play().catch(()=>{});
-          } else if(sequence[phaseIdx].type === "Rest") {
-            document.getElementById('audioRest').play().catch(()=>{});
-          }
+        // Audio-Logik exakt wie intervall.html
+        if(sequence[phaseIdx].type === "Work") {
+          document.getElementById('audioWork').play().catch(()=>{});
+        } else if(sequence[phaseIdx].type === "Rest") {
+          document.getElementById('audioRest').play().catch(()=>{});
         }
         secondsLeft = sequence[phaseIdx].dur;
         showTimer();
@@ -505,13 +511,6 @@ function startTimer() {
 function pauseTimer() {
   paused = !paused;
   $('pauseBtn').textContent = paused ? "Resume" : "Pause";
-  if(!paused && running && phaseIdx > 0 && phaseIdx < sequence.length) {
-    if(sequence[phaseIdx].type === "Work") {
-      document.getElementById('audioWork').play().catch(()=>{});
-    } else if(sequence[phaseIdx].type === "Rest") {
-      document.getElementById('audioRest').play().catch(()=>{});
-    }
-  }
 }
 function resetTimer() {
   if(timer) clearInterval(timer);
