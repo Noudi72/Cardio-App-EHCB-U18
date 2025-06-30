@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anaerobic Sprints – EHCB Cardio</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon-cardio.png" />
+  <style>
+    /* ---- 1:1 intervall.html style ---- */
+    body {
+      background: #181818;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .logo {
+      display: block;
+      margin: 18px auto 5px auto;
+      width: 80px;
+      max-width: 28vw;
+    }
+    #backBtn {
+      position: fixed;
+      top: 24px;
+      left: 20px;
+      z-index: 9;
+      border: none;
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.12em;
+      border-radius: 18px;
+      padding: 8px 19px;
+      cursor: pointer;
+      box-shadow: 0 1px 9px #0002;
+      transition: background 0.15s;
+    }
+    #backBtn:hover {
+      background: #b71c1c;
+    }
+    h1 {
+      color: #ffe028;
+      text-align: center;
+      margin-bottom: 0;
+      font-size: 2em;
+      letter-spacing: 2px;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    .info-text {
+      margin: 10px 0 6px 0;
+      color: #ffd700;
+      font-size: 1.03em;
+      text-align: center;
+    }
+    .desc {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #ffe028;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+    .autogen-controls {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0 0;
+      text-align: center;
+    }
+    .autogen-controls label {
+      background: #232323;
+      border-radius: 16px;
+      padding: 8px 9px;
+      margin: 0 10px 10px 0;
+      display: inline-block;
+      border: 1px solid #ffe028;
+      font-size: 1em;
+      color: #ffe028;
+      cursor: default;
+      user-select: none;
+    }
+    .autogen-controls label input {
+      margin-left: 6px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: none;
+      padding: 8px 9px;
+      width: 4.5em;
+      background: #181818;
+      color: #ffe028;
+      font-weight: bold;
+      text-align: center;
+      outline-offset: 2px;
+      outline-color: #ffe028;
+      outline-style: solid;
+      outline-width: 1px;
+      cursor: text;
+    }
+    .autogen-controls .autogen-btn-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      gap: 0;
+    }
+    .autogen-controls .autogen-btn-row button {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .autogen-controls button#generateBtn {
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.11em;
+      border: 2px solid #ffe028;
+      border-radius: 16px;
+      padding: 11px 0;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s, border-color 0.13s;
+      width: 160px;
+      min-width: 120px;
+      margin-left: 0;
+      margin-right: 0;
+      height: 48px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .autogen-controls button#generateBtn:hover {
+      background: #b71c1c;
+      border-color: #fff100;
+    }
+    .autogen-controls button#infoBtn {
+      background: #444;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.11em;
+      border-radius: 16px;
+      min-width: 120px;
+      padding: 11px 0;
+      border: none;
+      margin-left: 18px;
+      height: 48px;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s, box-shadow 0.13s, border-color 0.13s;
+      outline: none;
+      display: inline-block;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .autogen-controls button#infoBtn:focus {
+      border: 2px solid #ffe028;
+      box-shadow: 0 1px 10px #ffe028aa;
+      outline: none;
+    }
+    .autogen-controls button#infoBtn:hover {
+      background: #333;
+    }
+    .phaseBox {
+      margin: 44px auto 50px auto;
+      max-width: 600px;
+      width: 95vw;
+      border-radius: 42px;
+      box-shadow: 0 4px 18px #0008;
+      text-align: center;
+      font-size: 2.9em;
+      font-weight: bold;
+      padding: 44px 0 16px 0;
+      min-height: 260px;
+      background: #ffe028;
+      color: #222;
+      transition: background 0.22s, color 0.22s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .phaseBox.work { background: #d32f2f !important; color: #fff; }
+    .phaseBox.rest { background: #0cc06b !important; color: #fff; }
+    .phaseBox.relax { background: #ffe028 !important; color: #222; }
+    .phaseBox.prepare { background: orange !important; color: #fff; }
+    .phaseLabel {
+      font-size: 2.15em;
+      letter-spacing: 2.5px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 8px #0003;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    #phaseInfo {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: inherit;
+      margin-bottom: 6px;
+      letter-spacing: 0.7px;
+    }
+    #timer {
+      font-size: 6em;
+      font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+      font-weight: bold;
+      margin: 0 0 6px 0;
+      letter-spacing: 2.2px;
+      text-shadow: 0 2px 10px #0002;
+      line-height: 1.07;
+      order: 2;
+    }
+    #rpmHr {
+      font-size: 0.56em;
+      font-weight: 600;
+      color: inherit;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      order: 3;
+      letter-spacing: 0.7px;
+      word-break: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #rpmHr span {
+      white-space: nowrap;
+    }
+    #phaseCount {
+      font-size: 0.82em;
+      margin-top: 2px;
+      margin-bottom: 0;
+      color: #444;
+      font-weight: 600;
+      opacity: 0.9;
+      text-shadow: none;
+      order: 4;
+    }
+    .cardio-buttons-row {
+      display: flex;
+      flex-direction: column;
+      width: 98vw;
+      max-width: 98vw;
+      gap: 15px;
+      margin: 0 auto 0 auto;
+      position: relative;
+      bottom: 0;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    .cardio-buttons-row button {
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.39em;
+      border: none;
+      border-radius: 0 0 32px 32px;
+      padding: 22px 0;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s;
+      min-width: 98vw;
+      max-width: 98vw;
+      margin: 0;
+      flex: unset;
+    }
+    .cardio-buttons-row button:hover {
+      background: #b71c1c;
+    }
+    @media (min-width: 800px) {
+      .phaseBox {
+        max-width: 400px;
+        min-height: 150px;
+        padding: 20px 0 20px 0;
+        margin-top: 38px;
+      }
+      #timer {
+        font-size: 2.65em;
+        order: 2;
+        margin-bottom: 6px;
+      }
+      .phaseLabel {
+        font-size: 1.15em;
+        margin-bottom: 8px;
+      }
+      #phaseInfo {
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      #rpmHr {
+        font-size: 0.65em;
+        gap: 20px;
+        margin-bottom: 6px;
+      }
+      #phaseCount {
+        font-size: 0.82em;
+        margin-top: 2px;
+      }
+    }
+    @media (max-width: 600px) {
+      .logo {
+        margin-top: 18px;
+        width: 80px;
+        max-width: 28vw;
+      }
+      .phaseBox {
+        font-size: 1.37em;
+        padding: 32px 0 16px 0;
+        min-height: 310px;
+        max-width: 98vw;
+        width: 99vw;
+        border-radius: 16px;
+        margin: 21px auto 10px auto;
+        flex-direction: column;
+        gap: 8px;
+      }
+      #timer {
+        font-size: 5.5em;
+        margin-bottom: 6px;
+      }
+      .phaseLabel {
+        font-size: 1.05em;
+        margin-bottom: 6px;
+      }
+      #phaseInfo {
+        font-size: 1em;
+        margin-bottom: 6px;
+      }
+      #rpmHr {
+        font-size: 0.9em;
+        gap: 30px;
+        margin-bottom: 6px;
+      }
+      #phaseCount {
+        font-size: 0.82em;
+        margin-top: 2px;
+      }
+      .autogen-controls label {
+        font-size: 1em;
+        padding: 8px 9px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 96vw;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: 0;
+      }
+      .autogen-controls label input {
+        font-size: 1em;
+        padding: 8px 9px;
+      }
+      .autogen-controls .autogen-btn-row {
+        width: 100%;
+        justify-content: center;
+      }
+      .autogen-controls button#generateBtn,
+      .autogen-controls button#infoBtn {
+        width: 48vw;
+        max-width: 98vw;
+        min-width: 120px;
+        padding: 11px 0;
+        font-size: 1.1em;
+        height: 48px;
+      }
+    }
+    @media (max-width: 700px) {
+      .autogen-controls button#infoBtn {}
+    }
+  </style>
+</head>
+<body>
+<button id="backBtn" onclick="window.location.href='index.html'">Back</button>
+<img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
+<h1>Anaerobic Sprints</h1>
+<div class="info-text">Goal: Fast, repeated sprints and intensity peaks – focus on full-intensity sprint intervals, short recovery periods.</div>
+<div class="desc"><b>Efficient:</b> 10 × (20 sec all out / 40 sec easy) + 4 × (60 sec medium / 60 sec easy), warm-up & cool-down as needed.</div>
+<div class="autogen-controls">
+  <label>Sprints: <input type="number" id="sprintsInput" min="1" max="10" value="10"></label>
+  <label>Work: <input type="number" id="workInput" min="5" max="60" value="20"></label>
+  <label>Rest: <input type="number" id="restInput" min="10" max="90" value="40"></label>
+  <label>Medium (sets): <input type="number" id="mediumInput" min="1" max="4" value="4"></label>
+  <label>Medium Time: <input type="number" id="mediumTimeInput" min="10" max="120" value="60"></label>
+  <label>Rest Medium: <input type="number" id="restMediumInput" min="10" max="90" value="60"></label>
+  <label>Cool Down: <input type="number" id="cooldownInput" min="10" max="900" value="300"></label>
+  <div class="autogen-btn-row">
+    <button id="generateBtn" onclick="autogenPhases()" type="button">Generate</button>
+    <button id="infoBtn" aria-label="Show program table" type="button">Information</button>
+  </div>
+</div>
+<!-- Timer-Kachel wie bei intervall.html -->
+<div class="phaseBox prepare" id="phaseBox">
+  <div class="phaseLabel" id="phaseLabel">PREPARE</div>
+  <div id="phaseInfo">Intensity: <b>Low</b></div>
+  <div id="timer">00:20</div>
+  <div id="rpmHr"><span>RPM: <b>70-80</b></span><span>HR: <b>50-60</b>%</span></div>
+  <div id="phaseCount"></div>
+</div>
+<div class="cardio-buttons-row" id="cardioButtonsRow">
+  <button id="startBtn">Start</button>
+  <button id="pauseBtn" style="display:none;">Pause</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<!-- Modal Overlay for Program Table -->
+<div id="programModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.66); overflow:auto;">
+  <div id="programModalCard" style="background:#fff; color:#222; max-width:540px; margin:40px auto 0 auto; border-radius:22px; box-shadow:0 8px 40px #0009; padding:28px 5vw 30px 5vw; font-size:1.14em; position:relative; width:98vw;">
+    <button id="closeModalBtn" aria-label="Back to program" style="background:#d32f2f; color:#fff; border-radius:50%; border:none; font-size:1.25em; width:36px; height:36px; float:right; margin-top:-20px; margin-right:-16px; cursor:pointer;">✕</button>
+    <h2 style="margin-top:0; color:#d32f2f; font-family:'Arial Rounded MT Bold',Arial,sans-serif; font-size:1.25em; text-align:center; letter-spacing:2px;">Program Table</h2>
+    <div id="programTableContainer">
+      <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:1.09em;">
+        <thead>
+          <tr style="background:#ffe028; color:#222; font-weight:900; text-align:left;">
+            <th style="padding:7px 8px;">#</th>
+            <th style="padding:7px 8px;">Type</th>
+            <th style="padding:7px 8px;">Duration (s)</th>
+            <th style="padding:7px 8px;">Description</th>
+            <th style="padding:7px 8px;">RPM</th>
+            <th style="padding:7px 8px;">HR%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>Warm-up</td><td>600</td><td>10 min. easy, increasing resistance, seated</td><td>70-80</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>2</td><td>Sprint 1</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>3</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>4</td><td>Sprint 2</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>5</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>6</td><td>Sprint 3</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>7</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>8</td><td>Sprint 4</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>9</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>10</td><td>Sprint 5</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>11</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>12</td><td>Sprint 6</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>13</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>14</td><td>Sprint 7</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>15</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>16</td><td>Sprint 8</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>17</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>18</td><td>Sprint 9</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>19</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>20</td><td>Sprint 10</td><td>20</td><td>20 sec. all out</td><td>110</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>21</td><td>Rest</td><td>40</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>22</td><td>Phase 1</td><td>60</td><td>60 sec. medium intensity</td><td>80-90</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>23</td><td>Rest</td><td>60</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>24</td><td>Phase 2</td><td>60</td><td>60 sec. medium intensity</td><td>80-90</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>25</td><td>Rest</td><td>60</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>26</td><td>Phase 3</td><td>60</td><td>60 sec. medium intensity</td><td>80-90</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>27</td><td>Rest</td><td>60</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>28</td><td>Phase 4</td><td>60</td><td>60 sec. medium intensity</td><td>80-90</td><td>70-80</td>
+          </tr>
+          <tr>
+            <td>29</td><td>Rest</td><td>60</td><td>Easy pedal</td><td>60-70</td><td>50-60</td>
+          </tr>
+          <tr>
+            <td>30</td><td>Cool Down</td><td>300</td><td>5 min. easy pedal, low resistance</td><td>60</td><td>40-50</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:15px; font-size:0.97em; color:#555;">
+        <b>Legend:</b> <br>
+        <b>RPM:</b> Cadence (rounds per minute) &nbsp;&nbsp;|&nbsp;&nbsp; <b>HR%:</b> Percent of maximum heart rate
+      </div>
+    </div>
+  </div>
+<script>
+  // Modal logic
+  document.getElementById("infoBtn").onclick = function() {
+    document.getElementById("programModal").style.display = "block";
+  };
+  document.getElementById("closeModalBtn").onclick = function() {
+    document.getElementById("programModal").style.display = "none";
+  };
+  window.onclick = function(event) {
+    if(event.target == document.getElementById("programModal")){
+      document.getElementById("programModal").style.display = "none";
+    }
+  };
+  // TODO: Timer/Phasen-Logik exakt wie in intervall.html einsetzen!
+</script>
+<!-- Audios können wie bei intervall.html eingebunden werden -->
+</body>
+</html>
