@@ -551,9 +551,7 @@ const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const resetBtn = document.getElementById('resetBtn');
 
-// Default program
 function defaultPhases() {
-  // Default: 10 x (20s all out/40s easy) + 4 x (60s medium/60s easy), then cool down
   const sprints = Number(document.getElementById('sprintsInput').value) || 10;
   const work = Number(document.getElementById('workInput').value) || 20;
   const rest = Number(document.getElementById('restInput').value) || 40;
@@ -562,7 +560,7 @@ function defaultPhases() {
   const restMedium = Number(document.getElementById('restMediumInput').value) || 60;
   const cooldown = Number(document.getElementById('cooldownInput').value) || 300;
   let arr = [];
-  // Prepare phase
+  // Prepare
   arr.push({
     type: 'prepare',
     label: 'PREPARE',
@@ -656,10 +654,7 @@ function startTimer() {
     if(timeLeft > 0) {
       timeLeft--;
       timerDisplay.innerHTML = formatTime(timeLeft);
-      // Optional: 3s beep before phase end
-      if(timeLeft === 3 && currentPhase < phases.length-1) {
-        // Could beep here
-      }
+      // 3 Sekunden vor Phasenende (optional für future audio)
     } else {
       nextPhase();
     }
@@ -685,9 +680,8 @@ function resetTimer() {
 }
 
 function nextPhase() {
-  // Play audio depending on phase type
   if(currentPhase < phases.length-1) {
-    // Play audio for next phase
+    // Audio bei Phasenwechsel exakt wie in intervall.html
     const next = phases[currentPhase+1];
     if(next.type === 'work') {
       if(audioWork) { audioWork.currentTime = 0; audioWork.play(); }
@@ -698,7 +692,7 @@ function nextPhase() {
     timeLeft = phases[currentPhase].duration;
     updatePhaseUI();
   } else {
-    // Session complete!
+    // Ende
     if(audioEnd) { audioEnd.currentTime = 0; audioEnd.play(); }
     pauseTimer();
     timerDisplay.innerHTML = "DONE";
@@ -738,7 +732,6 @@ document.getElementById("startBtn").addEventListener("click", function(e) {
 pauseBtn.onclick = pauseTimer;
 resetBtn.onclick = resetTimer;
 
-// On load, set up phases
 window.onload = function() {
   autogenPhases();
   resetTimer();
