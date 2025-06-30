@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Regeneration – EHCB Cardio</title>
+  <style>
+    body {
+      background: #181818;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .logo {
+      display: block;
+      margin: 18px auto 5px auto;
+      width: 80px;
+      max-width: 28vw;
+    }
+    #backBtn {
+      position: fixed;
+      top: 24px;
+      left: 20px;
+      z-index: 9;
+      border: none;
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.12em;
+      border-radius: 18px;
+      padding: 8px 19px;
+      cursor: pointer;
+      box-shadow: 0 1px 9px #0002;
+      transition: background 0.15s;
+    }
+    #backBtn:hover {
+      background: #b71c1c;
+    }
+    h1 {
+      color: #ffe028;
+      text-align: center;
+      margin-bottom: 0;
+      font-size: 2em;
+      letter-spacing: 2px;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    .info-text {
+      margin: 10px 0 6px 0;
+      color: #ffd700;
+      font-size: 1.03em;
+      text-align: center;
+    }
+    .desc {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #ffe028;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+    .autogen-controls {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0 0;
+      text-align: center;
+    }
+    .autogen-controls .autogen-btn-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      gap: 0;
+    }
+    .autogen-controls .autogen-btn-row button {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .autogen-controls button#infoBtn {
+      background: #444;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.11em;
+      border-radius: 16px;
+      min-width: 120px;
+      padding: 11px 0;
+      border: none;
+      margin-left: 18px;
+      height: 48px;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s, box-shadow 0.13s, border-color 0.13s;
+      outline: none;
+      display: inline-block;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .autogen-controls button#infoBtn:focus {
+      border: 2px solid #ffe028;
+      box-shadow: 0 1px 10px #ffe028aa;
+      outline: none;
+    }
+    .autogen-controls button#infoBtn:hover {
+      background: #333;
+    }
+    .phaseBox {
+      margin: 44px auto 50px auto;
+      max-width: 600px;
+      width: 95vw;
+      border-radius: 42px;
+      box-shadow: 0 4px 18px #0008;
+      text-align: center;
+      font-size: 2.9em;
+      font-weight: bold;
+      padding: 44px 0 16px 0;
+      min-height: 260px;
+      background: #ffe028;
+      color: #222;
+      transition: background 0.22s, color 0.22s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .phaseBox.work { background: #3ba4d3 !important; color: #fff; }
+    .phaseBox.rest { background: #0cc06b !important; color: #fff; }
+    .phaseBox.relax { background: #ffe028 !important; color: #222; }
+    .phaseBox.prepare { background: orange !important; color: #fff; }
+    .phaseLabel {
+      font-size: 2.15em;
+      letter-spacing: 2.5px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 8px #0003;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    #phaseInfo {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: inherit;
+      margin-bottom: 6px;
+      letter-spacing: 0.7px;
+    }
+    #timer {
+      font-size: 6em;
+      font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+      font-weight: bold;
+      margin: 0 0 6px 0;
+      letter-spacing: 2.2px;
+      text-shadow: 0 2px 10px #0002;
+      line-height: 1.07;
+      order: 2;
+    }
+    #rpmHr {
+      font-size: 0.56em;
+      font-weight: 600;
+      color: inherit;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      order: 3;
+      letter-spacing: 0.7px;
+      word-break: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #rpmHr span {
+      white-space: nowrap;
+    }
+    #phaseCount {
+      font-size: 0.82em;
+      margin-top: 2px;
+      margin-bottom: 0;
+      color: #444;
+      font-weight: 600;
+      opacity: 0.9;
+      text-shadow: none;
+      order: 4;
+    }
+    .cardio-buttons-row {
+      display: flex;
+      flex-direction: column;
+      width: 98vw;
+      max-width: 98vw;
+      gap: 15px;
+      margin: 0 auto 0 auto;
+      position: relative;
+      bottom: 0;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    .cardio-buttons-row button {
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.39em;
+      border: none;
+      border-radius: 0 0 32px 32px;
+      padding: 22px 0;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #0002;
+      transition: background 0.13s;
+      min-width: 98vw;
+      max-width: 98vw;
+      margin: 0;
+      flex: unset;
+    }
+    .cardio-buttons-row button:hover {
+      background: #b71c1c;
+    }
+    @media (min-width: 800px) {
+      .phaseBox {
+        max-width: 400px;
+        min-height: 150px;
+        padding: 20px 0 20px 0;
+        margin-top: 38px;
+      }
+      #timer {
+        font-size: 2.65em;
+        order: 2;
+        margin-bottom: 6px;
+      }
+      .phaseLabel {
+        font-size: 1.15em;
+        margin-bottom: 8px;
+      }
+      #phaseInfo {
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      #rpmHr {
+        font-size: 0.65em;
+        gap: 20px;
+        margin-bottom: 6px;
+      }
+      #phaseCount {
+        font-size: 0.82em;
+        margin-top: 2px;
+      }
+    }
+    @media (max-width: 600px) {
+      .logo {
+        margin-top: 18px;
+        width: 80px;
+        max-width: 28vw;
+      }
+      .phaseBox {
+        font-size: 1.37em;
+        padding: 32px 0 16px 0;
+        min-height: 310px;
+        max-width: 98vw;
+        width: 99vw;
+        border-radius: 16px;
+        margin: 21px auto 10px auto;
+        flex-direction: column;
+        gap: 8px;
+      }
+      #timer {
+        font-size: 5.5em;
+        margin-bottom: 6px;
+      }
+      .phaseLabel {
+        font-size: 1.05em;
+        margin-bottom: 6px;
+      }
+      #phaseInfo {
+        font-size: 1em;
+        margin-bottom: 6px;
+      }
+      #rpmHr {
+        font-size: 0.9em;
+        gap: 30px;
+        margin-bottom: 6px;
+      }
+      #phaseCount {
+        font-size: 0.82em;
+        margin-top: 2px;
+      }
+      .autogen-controls .autogen-btn-row {
+        width: 100%;
+        justify-content: center;
+      }
+      .autogen-controls button#infoBtn {
+        width: 48vw;
+        max-width: 98vw;
+        min-width: 120px;
+        padding: 11px 0;
+        font-size: 1.1em;
+        height: 48px;
+      }
+    }
+    @media (max-width: 700px) {
+      .autogen-controls button#infoBtn {}
+    }
+  </style>
+</head>
+<body>
+<button id="backBtn" onclick="window.location.href='index.html'">Back</button>
+<img src="icon-cardio.png" class="logo" alt="Cardio Logo" />
+<h1>Regeneration</h1>
+<div class="info-text">Recovery & improved circulation. Low intensity, steady cadence, lactate reduction.</div>
+<div class="desc">Typical: 3 × (5 min medium / 2 min easy), 5 min cool down</div>
+<div class="autogen-controls">
+  <div class="autogen-btn-row">
+    <button id="infoBtn" aria-label="Show program table" type="button">Information</button>
+  </div>
+</div>
+<!-- Modal Overlay for Program Table -->
+<div id="programModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.66); overflow:auto;">
+  <div id="programModalCard" style="background:#fff; color:#222; max-width:540px; margin:40px auto 0 auto; border-radius:22px; box-shadow:0 8px 40px #0009; padding:28px 5vw 30px 5vw; font-size:1.14em; position:relative; width:98vw;">
+    <button id="closeModalBtn" aria-label="Back to program" style="background:#d32f2f; color:#fff; border-radius:50%; border:none; font-size:1.25em; width:36px; height:36px; float:right; margin-top:-20px; margin-right:-16px; cursor:pointer;">✕</button>
+    <h2 style="margin-top:0; color:#d32f2f; font-family:'Arial Rounded MT Bold',Arial,sans-serif; font-size:1.25em; text-align:center; letter-spacing:2px;">Regeneration – Program Table</h2>
+    <div id="programTableContainer"></div>
+  </div>
+</div>
+<div class="phaseBox prepare" id="phaseBox">
+  <div class="phaseLabel" id="phaseLabel">Prepare</div>
+  <div id="phaseInfo">Intensity: <b>Low</b> &nbsp;</div>
+  <div id="timer">00:20</div>
+  <div id="rpmHr"><span>RPM: <b>70-80</b></span><span>HR: <b>50-60%</b></span></div>
+  <div id="phaseCount"></div>
+</div>
+<div class="cardio-buttons-row" id="cardioButtonsRow">
+  <button id="startBtn">Start</button>
+  <button id="pauseBtn" style="display:none;">Pause</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<script>
+  // --- Regeneration: Hardcoded Phases ---
+  let phases = [
+    {label: "Prepare", desc: "Get Ready", duration: 20, type: "prepare", intensity: "Low", rpm: "70-80", hr: "50-60"},
+    {label: "Work", desc: "Medium resistance", duration: 300, type: "work", intensity: "Medium", rpm: "70", hr: "70-75"},
+    {label: "Rest", desc: "Easy pedal", duration: 120, type: "rest", intensity: "Low", rpm: "60", hr: "50-60"},
+    {label: "Work", desc: "Medium resistance", duration: 300, type: "work", intensity: "Medium", rpm: "70", hr: "70-75"},
+    {label: "Rest", desc: "Easy pedal", duration: 120, type: "rest", intensity: "Low", rpm: "60", hr: "50-60"},
+    {label: "Work", desc: "Medium resistance", duration: 300, type: "work", intensity: "Medium", rpm: "70", hr: "70-75"},
+    {label: "Rest", desc: "Easy pedal", duration: 120, type: "rest", intensity: "Low", rpm: "60", hr: "50-60"},
+    {label: "Relax", desc: "Cool Down", duration: 300, type: "relax", intensity: "Low", rpm: "60", hr: "50-60"}
+  ];
+  let currentPhase = 0, timer = null, running = false, paused = false, t = phases[0].duration;
+  let workAudioFlag = false;
+
+  function updateUI() {
+    const p = phases[currentPhase];
+    const box = document.getElementById("phaseBox");
+    box.className = "phaseBox " + (p.type || p.label.toLowerCase());
+    document.getElementById("phaseLabel").textContent = p.label;
+    document.getElementById("timer").textContent = ("0" + Math.floor(t / 60)).slice(-2) + ":" + ("0" + (t % 60)).slice(-2);
+    document.getElementById("phaseInfo").innerHTML = `Intensity: <b>${p.intensity}</b>`;
+    document.getElementById("rpmHr").innerHTML = ` <span>RPM: <b>${p.rpm}</b></span><span>HR: <b>${p.hr}%</b></span> `;
+    document.getElementById("phaseCount").textContent = `Phase ${currentPhase + 1} of ${phases.length}`;
+  }
+
+  function playAudioSafe(audioElement) {
+    if (!audioElement) return;
+    // Safari workaround: play silent audio if not yet unlocked
+    if (window._audioUnlocked !== true && audioElement.paused) {
+      try {
+        audioElement.volume = 0;
+        audioElement.play().then(() => {
+          audioElement.pause();
+          audioElement.currentTime = 0;
+          audioElement.volume = 1;
+        }).catch(()=>{});
+      } catch(e){}
+      window._audioUnlocked = true;
+    }
+    audioElement.volume = 1;
+    const playPromise = audioElement.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {});
+    }
+  }
+
+  function nextPhase() {
+    if (currentPhase < phases.length - 1) {
+      currentPhase++;
+      t = parseInt(phases[currentPhase].duration);
+      workAudioFlag = false;
+      updateUI();
+      const ptype = phases[currentPhase].type || phases[currentPhase].label.toLowerCase();
+      if (ptype === 'work') {
+        playAudioSafe(document.getElementById('audioWork'));
+      } else if (ptype === 'rest') {
+        playAudioSafe(document.getElementById('audioRest'));
+      } else if (ptype === 'relax') {
+        // Optionally play relax audio if you have one
+      } else if (ptype === 'prepare') {
+        // Optionally play prepare audio if you have one
+      }
+    } else {
+      running = false;
+      clearInterval(timer);
+      document.getElementById("startBtn").disabled = false;
+      playAudioSafe(document.getElementById('audioEnd'));
+    }
+  }
+
+  function startProgram() {
+    if (running && !paused) return;
+    running = true;
+    paused = false;
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("startBtn").textContent = "Start";
+    document.getElementById("pauseBtn").style.display = "";
+    document.getElementById("resetBtn").style.display = "";
+    hideNonTimerUI(true);
+    // Play phase audio at (re)start if needed
+    const p = phases[currentPhase];
+    const ptype = p.type || p.label.toLowerCase();
+    if (ptype === 'work') {
+      playAudioSafe(document.getElementById('audioWork'));
+    } else if (ptype === 'rest') {
+      playAudioSafe(document.getElementById('audioRest'));
+    } else if (ptype === 'relax') {
+      // Optionally play relax audio if you have one
+    } else if (ptype === 'prepare') {
+      // Optionally play prepare audio if you have one
+    }
+    timer = setInterval(() => {
+      t--;
+      const p = phases[currentPhase];
+      const ptype = p.type || p.label.toLowerCase();
+      if (ptype === 'work' && t <= 4 && !workAudioFlag) {
+        playAudioSafe(document.getElementById('audioRest'));
+        workAudioFlag = true;
+      }
+      if (t < 0) {
+        nextPhase();
+      } else {
+        updateUI();
+      }
+    }, 1000);
+  }
+
+  function pauseProgram() {
+    if (!running || paused) return;
+    paused = true;
+    clearInterval(timer);
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "Resume";
+    document.getElementById("pauseBtn").style.display = "none";
+  }
+
+  function resetProgram() {
+    clearInterval(timer);
+    running = false;
+    paused = false;
+    currentPhase = 0;
+    t = parseInt(phases[0].duration);
+    workAudioFlag = false;
+    updateUI();
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "Start";
+    document.getElementById("pauseBtn").style.display = "none";
+    document.getElementById("resetBtn").style.display = "";
+    hideNonTimerUI(false);
+  }
+
+  function hideNonTimerUI(hide) {
+    const elems = [
+      document.querySelector('.autogen-controls'),
+      document.querySelector('.info-text'),
+      document.querySelector('.desc'),
+      document.querySelector('.logo')
+    ];
+    elems.forEach(el => { if (el) el.style.display = hide ? "none" : ""; });
+  }
+
+  // ----------- Modal Program Table Logic -----------
+  function showProgramModal() {
+    document.querySelector('.autogen-controls').style.display = "none";
+    document.querySelector('.info-text').style.display = "none";
+    document.querySelector('.desc').style.display = "none";
+    document.querySelector('.logo').style.display = "none";
+    document.getElementById('phaseBox').style.display = "none";
+    document.getElementById('cardioButtonsRow').style.display = "none";
+    document.getElementById('programModal').style.display = "block";
+    generateProgramTable();
+  }
+
+  function closeProgramModal() {
+    document.querySelector('.autogen-controls').style.display = "";
+    document.querySelector('.info-text').style.display = "";
+    document.querySelector('.desc').style.display = "";
+    document.querySelector('.logo').style.display = "";
+    document.getElementById('phaseBox').style.display = "";
+    document.getElementById('cardioButtonsRow').style.display = "";
+    document.getElementById('programModal').style.display = "none";
+  }
+
+  function generateProgramTable() {
+    const container = document.getElementById('programTableContainer');
+    if (!container) return;
+    let table = '<div style="overflow-x:auto;"><table style="border-collapse:collapse; width:100%; margin:0 auto; font-size:1.07em; background:#fff; color:#222; border-radius:14px; box-shadow:0 1px 6px #0002;">';
+    table += '<thead><tr style="background:#ffe028; color:#222; font-weight:bold;">';
+    table += '<th style="padding:8px 6px;">#</th><th style="padding:8px 6px;">Type</th><th style="padding:8px 6px;">Duration (s)</th><th style="padding:8px 6px;">Description</th><th style="padding:8px 6px;">Intensity</th><th style="padding:8px 6px;">RPM</th><th style="padding:8px 6px;">HR%</th>';
+    table += '</tr></thead><tbody>';
+    for (let i = 0; i < phases.length; ++i) {
+      const p = phases[i];
+      table += `<tr${i===0?' style="background:#ffe02822;"':''}>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${i+1}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.label}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.duration}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.desc||'-'}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.intensity||'-'}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.rpm||'-'}</td>`;
+      table += `<td style="padding:6px 5px; text-align:center;">${p.hr||'-'}${typeof p.hr==='string'&&p.hr.match(/%$/)?'':(p.hr!=='-'?'%':'')}</td>`;
+      table += '</tr>';
+    }
+    table += '</tbody></table></div>';
+    container.innerHTML = table;
+  }
+
+  // Setup Info button and modal close
+  document.addEventListener("DOMContentLoaded", function() {
+    var infoBtn = document.getElementById('infoBtn');
+    if (infoBtn) infoBtn.onclick = showProgramModal;
+    var closeBtn = document.getElementById('closeModalBtn');
+    if (closeBtn) closeBtn.onclick = closeProgramModal;
+    document.getElementById('programModal').addEventListener('click', function(e){
+      if (e.target === this) closeProgramModal();
+    });
+    function setInfoBtnText() {
+      var btn = document.getElementById('infoBtn');
+      if (!btn) return;
+      if (window.innerWidth <= 700) {
+        btn.textContent = 'Info';
+      } else {
+        btn.textContent = 'Information';
+      }
+    }
+    setInfoBtnText();
+    window.addEventListener('resize', setInfoBtnText);
+  });
+
+  // Unlock audio on first button click (Safari iOS workaround)
+  function unlockAllAudio() {
+    if (window._audioUnlocked) return;
+    ['audioWork', 'audioRest', 'audioEnd'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        try {
+          el.volume = 0;
+          el.play().then(function() {
+            el.pause();
+            el.currentTime = 0;
+            el.volume = 1;
+          }).catch(function(){});
+        } catch(e){}
+      }
+    });
+    window._audioUnlocked = true;
+  }
+  document.getElementById("startBtn").addEventListener("click", function(e) {
+    unlockAllAudio();
+    startProgram();
+  });
+  document.getElementById("pauseBtn").onclick = pauseProgram;
+  document.getElementById("resetBtn").onclick = resetProgram;
+  document.getElementById("pauseBtn").style.display = "none";
+  updateUI();
+</script>
+<audio id="audioWork" src="start_work.m4a"></audio>
+<audio id="audioRest" src="Rest.m4a"></audio>
+<audio id="audioEnd" src="Session Complete.m4a"></audio>
+</body>
+</html>
