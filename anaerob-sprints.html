@@ -711,8 +711,30 @@ function nextPhase() {
   }
 }
 
+// Audio unlock code (Safari/iOS compatibility)
+function unlockAllAudio() {
+  if (window._audioUnlocked) return;
+  ['audioWork', 'audioRest', 'audioEnd'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      try {
+        el.volume = 0;
+        el.play().then(function() {
+          el.pause();
+          el.currentTime = 0;
+          el.volume = 1;
+        }).catch(function(){});
+      } catch(e){}
+    }
+  });
+  window._audioUnlocked = true;
+}
+
 // Button events
-startBtn.onclick = startTimer;
+document.getElementById("startBtn").addEventListener("click", function(e) {
+  unlockAllAudio();
+  startTimer();
+});
 pauseBtn.onclick = pauseTimer;
 resetBtn.onclick = resetTimer;
 
