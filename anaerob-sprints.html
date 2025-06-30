@@ -515,20 +515,224 @@
   </div>
 </div>
 <script>
-  // Modal logic
-  document.getElementById("infoBtn").onclick = function() {
-    document.getElementById("programModal").style.display = "block";
-  };
-  document.getElementById("closeModalBtn").onclick = function() {
+// Modal logic
+document.getElementById("infoBtn").onclick = function() {
+  document.getElementById("programModal").style.display = "block";
+};
+document.getElementById("closeModalBtn").onclick = function() {
+  document.getElementById("programModal").style.display = "none";
+};
+window.onclick = function(event) {
+  if(event.target == document.getElementById("programModal")){
     document.getElementById("programModal").style.display = "none";
-  };
-  window.onclick = function(event) {
-    if(event.target == document.getElementById("programModal")){
-      document.getElementById("programModal").style.display = "none";
+  }
+};
+
+// === Timer/Phasen/Audio-Logik wie in intervall.html ===
+let phases = [];
+let currentPhase = 0;
+let timeLeft = 0;
+let timerInterval = null;
+let running = false;
+
+// Audio elements
+const audioWork = document.getElementById('audioWork');
+const audioRest = document.getElementById('audioRest');
+const audioEnd = document.getElementById('audioEnd');
+
+// UI elements
+const phaseBox = document.getElementById('phaseBox');
+const phaseLabel = document.getElementById('phaseLabel');
+const phaseInfo = document.getElementById('phaseInfo');
+const timerDisplay = document.getElementById('timer');
+const rpmHr = document.getElementById('rpmHr');
+const phaseCount = document.getElementById('phaseCount');
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+// Default program
+function defaultPhases() {
+  // Default: 10 x (20s all out/40s easy) + 4 x (60s medium/60s easy), then cool down
+  const sprints = Number(document.getElementById('sprintsInput').value) || 10;
+  const work = Number(document.getElementById('workInput').value) || 20;
+  const rest = Number(document.getElementById('restInput').value) || 40;
+  const medium = Number(document.getElementById('mediumInput').value) || 4;
+  const mediumTime = Number(document.getElementById('mediumTimeInput').value) || 60;
+  const restMedium = Number(document.getElementById('restMediumInput').value) || 60;
+  const cooldown = Number(document.getElementById('cooldownInput').value) || 300;
+  let arr = [];
+  // Prepare phase
+  arr.push({
+    type: 'prepare',
+    label: 'PREPARE',
+    info: 'Intensity: <b>Low</b>',
+    duration: 20,
+    rpm: '70-80',
+    hr: '50-60'
+  });
+  // Warm-up
+  arr.push({
+    type: 'relax',
+    label: 'WARM-UP',
+    info: '10 min. easy, increasing resistance, seated',
+    duration: 600,
+    rpm: '70-80',
+    hr: '50-60'
+  });
+  // Sprints
+  for(let i=0; i<sprints; i++) {
+    arr.push({
+      type: 'work',
+      label: `SPRINT ${i+1}`,
+      info: 'All out!',
+      duration: work,
+      rpm: '110',
+      hr: '70-80'
+    });
+    arr.push({
+      type: 'rest',
+      label: 'EASY',
+      info: 'Easy pedal',
+      duration: rest,
+      rpm: '60-70',
+      hr: '50-60'
+    });
+  }
+  // Medium intervals
+  for(let i=0; i<medium; i++) {
+    arr.push({
+      type: 'work',
+      label: `MEDIUM ${i+1}`,
+      info: 'Medium intensity',
+      duration: mediumTime,
+      rpm: '80-90',
+      hr: '70-80'
+    });
+    arr.push({
+      type: 'rest',
+      label: 'EASY',
+      info: 'Easy pedal',
+      duration: restMedium,
+      rpm: '60-70',
+      hr: '50-60'
+    });
+  }
+  // Cool down
+  arr.push({
+    type: 'relax',
+    label: 'COOL DOWN',
+    info: '5 min. easy pedal, low resistance',
+    duration: cooldown,
+    rpm: '60',
+    hr: '40-50'
+  });
+  return arr;
+}
+
+function autogenPhases() {
+  phases = defaultPhases();
+  currentPhase = 0;
+  timeLeft = phases[0].duration;
+  updatePhaseUI();
+  resetTimer();
+}
+
+function updatePhaseUI() {
+  if (!phases.length) return;
+  const phase = phases[currentPhase];
+  phaseBox.className = 'phaseBox ' + phase.type;
+  phaseLabel.innerHTML = phase.label;
+  phaseInfo.innerHTML = phase.info;
+  timerDisplay.innerHTML = formatTime(timeLeft);
+  rpmHr.innerHTML = `<span>RPM: <b>${phase.rpm}</b></span><span>HR: <b>${phase.hr}</b>%</span>`;
+  phaseCount.innerHTML = `Phase ${currentPhase+1} / ${phases.length}`;
+}
+
+function formatTime(t) {
+  const m = Math.floor(t/60);
+  const s = t%60;
+  return (m<10?'0':'')+m+':' + (s<10?'0':'')+s;
+}
+
+function startTimer() {
+  if(running) return;
+  if(!phases.length) autogenPhases();
+  running = true;
+  startBtn.style.display = 'none';
+  pauseBtn.style.display = '';
+  timerInterval = setInterval(() => {
+    if(timeLeft > 0) {
+      timeLeft--;
+      timerDisplay.innerHTML = formatTime(timeLeft);
+      // Optional: 3s beep before phase end
+      if(timeLeft === 3 && currentPhase < phases.length-1) {
+        // Could beep here
+      }
+    } else {
+      nextPhase();
     }
-  };
-  // TODO: Timer/Phasen-Logik exakt wie in intervall.html einsetzen!
+  }, 1000);
+}
+
+function pauseTimer() {
+  if(!running) return;
+  running = false;
+  startBtn.style.display = '';
+  pauseBtn.style.display = 'none';
+  if(timerInterval) clearInterval(timerInterval);
+}
+
+function resetTimer() {
+  pauseTimer();
+  if(phases.length === 0) phases = defaultPhases();
+  currentPhase = 0;
+  timeLeft = phases[0].duration;
+  updatePhaseUI();
+  startBtn.style.display = '';
+  pauseBtn.style.display = 'none';
+}
+
+function nextPhase() {
+  // Play audio depending on phase type
+  if(currentPhase < phases.length-1) {
+    // Play audio for next phase
+    const next = phases[currentPhase+1];
+    if(next.type === 'work') {
+      if(audioWork) { audioWork.currentTime = 0; audioWork.play(); }
+    } else if(next.type === 'rest') {
+      if(audioRest) { audioRest.currentTime = 0; audioRest.play(); }
+    }
+    currentPhase++;
+    timeLeft = phases[currentPhase].duration;
+    updatePhaseUI();
+  } else {
+    // Session complete!
+    if(audioEnd) { audioEnd.currentTime = 0; audioEnd.play(); }
+    pauseTimer();
+    timerDisplay.innerHTML = "DONE";
+    phaseLabel.innerHTML = "COMPLETE";
+    phaseInfo.innerHTML = "Session finished!";
+    rpmHr.innerHTML = "";
+    phaseCount.innerHTML = "";
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = 'none';
+  }
+}
+
+// Button events
+startBtn.onclick = startTimer;
+pauseBtn.onclick = pauseTimer;
+resetBtn.onclick = resetTimer;
+
+// On load, set up phases
+window.onload = function() {
+  autogenPhases();
+  resetTimer();
+};
 </script>
-<!-- Audios und Timerlogik wie in intervall.html -->
+<audio id="audioWork" src="start_work.m4a"></audio>
+<audio id="audioRest" src="Rest.m4a"></audio>
+<audio id="audioEnd" src="Session Complete.m4a"></audio>
 </body>
 </html>
