@@ -515,227 +515,201 @@
   </div>
 </div>
 <script>
-// Modal logic
-document.getElementById("infoBtn").onclick = function() {
-  document.getElementById("programModal").style.display = "block";
-};
-document.getElementById("closeModalBtn").onclick = function() {
-  document.getElementById("programModal").style.display = "none";
-};
-window.onclick = function(event) {
-  if(event.target == document.getElementById("programModal")){
-    document.getElementById("programModal").style.display = "none";
-  }
-};
-
-// === Timer/Phasen/Audio-Logik wie in intervall.html ===
-let phases = [];
-let currentPhase = 0;
-let timeLeft = 0;
-let timerInterval = null;
-let running = false;
-
-// Audio elements
-const audioWork = document.getElementById('audioWork');
-const audioRest = document.getElementById('audioRest');
-const audioEnd = document.getElementById('audioEnd');
-
-// UI elements
-const phaseBox = document.getElementById('phaseBox');
-const phaseLabel = document.getElementById('phaseLabel');
-const phaseInfo = document.getElementById('phaseInfo');
-const timerDisplay = document.getElementById('timer');
-const rpmHr = document.getElementById('rpmHr');
-const phaseCount = document.getElementById('phaseCount');
-const startBtn = document.getElementById('startBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const resetBtn = document.getElementById('resetBtn');
-
-function defaultPhases() {
-  const sprints = Number(document.getElementById('sprintsInput').value) || 10;
-  const work = Number(document.getElementById('workInput').value) || 20;
-  const rest = Number(document.getElementById('restInput').value) || 40;
-  const medium = Number(document.getElementById('mediumInput').value) || 4;
-  const mediumTime = Number(document.getElementById('mediumTimeInput').value) || 60;
-  const restMedium = Number(document.getElementById('restMediumInput').value) || 60;
-  const cooldown = Number(document.getElementById('cooldownInput').value) || 300;
-  let arr = [];
-  // Prepare
-  arr.push({
-    type: 'prepare',
-    label: 'PREPARE',
-    info: 'Intensity: <b>Low</b>',
-    duration: 20,
-    rpm: '70-80',
-    hr: '50-60'
-  });
-  // Sprints
-  for(let i=0; i<sprints; i++) {
-    arr.push({
-      type: 'work',
-      label: `SPRINT ${i+1}`,
-      info: 'All out!',
-      duration: work,
-      rpm: '110',
-      hr: '70-80'
-    });
-    arr.push({
-      type: 'rest',
-      label: 'EASY',
-      info: 'Easy pedal',
-      duration: rest,
-      rpm: '60-70',
-      hr: '50-60'
-    });
-  }
-  // Medium intervals
-  for(let i=0; i<medium; i++) {
-    arr.push({
-      type: 'work',
-      label: `MEDIUM ${i+1}`,
-      info: 'Medium intensity',
-      duration: mediumTime,
-      rpm: '80-90',
-      hr: '70-80'
-    });
-    arr.push({
-      type: 'rest',
-      label: 'EASY',
-      info: 'Easy pedal',
-      duration: restMedium,
-      rpm: '60-70',
-      hr: '50-60'
-    });
-  }
-  // Cool down
-  arr.push({
-    type: 'relax',
-    label: 'COOL DOWN',
-    info: '5 min. easy pedal, low resistance',
-    duration: cooldown,
-    rpm: '60',
-    hr: '40-50'
-  });
-  return arr;
-}
-
-function autogenPhases() {
-  phases = defaultPhases();
-  currentPhase = 0;
-  timeLeft = phases[0].duration;
-  updatePhaseUI();
-  resetTimer();
-}
-
-function updatePhaseUI() {
-  if (!phases.length) return;
-  const phase = phases[currentPhase];
-  phaseBox.className = 'phaseBox ' + phase.type;
-  phaseLabel.innerHTML = phase.label;
-  phaseInfo.innerHTML = phase.info;
-  timerDisplay.innerHTML = formatTime(timeLeft);
-  rpmHr.innerHTML = `<span>RPM: <b>${phase.rpm}</b></span><span>HR: <b>${phase.hr}</b>%</span>`;
-  phaseCount.innerHTML = `Phase ${currentPhase+1} / ${phases.length}`;
-}
-
-function formatTime(t) {
-  const m = Math.floor(t/60);
-  const s = t%60;
-  return (m<10?'0':'')+m+':' + (s<10?'0':'')+s;
-}
-
-function startTimer() {
-  if(running) return;
-  if(!phases.length) autogenPhases();
-  running = true;
-  startBtn.style.display = 'none';
-  pauseBtn.style.display = '';
-  timerInterval = setInterval(() => {
-    if(timeLeft > 0) {
-      timeLeft--;
-      timerDisplay.innerHTML = formatTime(timeLeft);
-      // 3 Sekunden vor Phasenende (optional für future audio)
-    } else {
-      nextPhase();
+  // ---- Default Phases Generator ----
+  function generatePhasesAnaerob() {
+    const sprints = Number(document.getElementById('sprintsInput').value) || 10;
+    const work = Number(document.getElementById('workInput').value) || 20;
+    const rest = Number(document.getElementById('restInput').value) || 40;
+    const medium = Number(document.getElementById('mediumInput').value) || 4;
+    const mediumTime = Number(document.getElementById('mediumTimeInput').value) || 60;
+    const restMedium = Number(document.getElementById('restMediumInput').value) || 60;
+    const cooldown = Number(document.getElementById('cooldownInput').value) || 300;
+    let arr = [
+      {label: "Prepare", desc: "Get Ready", duration: 20, type: "prepare", intensity: "Low", rpm: "70-80", hr: "50-60"}
+    ];
+    for(let i=1; i<=sprints; i++) {
+      arr.push({label: "Sprint", desc: "All out!", duration: work, type: "work", intensity: "High", rpm: "110", hr: "70-80"});
+      arr.push({label: "Rest", desc: "Easy pedal", duration: rest, type: "rest", intensity: "Low", rpm: "60-70", hr: "50-60"});
     }
-  }, 1000);
-}
-
-function pauseTimer() {
-  if(!running) return;
-  running = false;
-  startBtn.style.display = '';
-  pauseBtn.style.display = 'none';
-  if(timerInterval) clearInterval(timerInterval);
-}
-
-function resetTimer() {
-  pauseTimer();
-  if(phases.length === 0) phases = defaultPhases();
-  currentPhase = 0;
-  timeLeft = phases[0].duration;
-  updatePhaseUI();
-  startBtn.style.display = '';
-  pauseBtn.style.display = 'none';
-}
-
-function nextPhase() {
-  if(currentPhase < phases.length-1) {
-    // Audio bei Phasenwechsel exakt wie in intervall.html
-    const next = phases[currentPhase+1];
-    if(next.type === 'work') {
-      if(audioWork) { audioWork.currentTime = 0; audioWork.play(); }
-    } else if(next.type === 'rest') {
-      if(audioRest) { audioRest.currentTime = 0; audioRest.play(); }
+    for(let i=1; i<=medium; i++) {
+      arr.push({label: "Medium", desc: "Medium intensity", duration: mediumTime, type: "work", intensity: "Medium", rpm: "80-90", hr: "70-80"});
+      arr.push({label: "Rest", desc: "Easy pedal", duration: restMedium, type: "rest", intensity: "Low", rpm: "60-70", hr: "50-60"});
     }
-    currentPhase++;
-    timeLeft = phases[currentPhase].duration;
-    updatePhaseUI();
-  } else {
-    // Ende
-    if(audioEnd) { audioEnd.currentTime = 0; audioEnd.play(); }
-    pauseTimer();
-    timerDisplay.innerHTML = "DONE";
-    phaseLabel.innerHTML = "COMPLETE";
-    phaseInfo.innerHTML = "Session finished!";
-    rpmHr.innerHTML = "";
-    phaseCount.innerHTML = "";
-    startBtn.style.display = 'none';
-    pauseBtn.style.display = 'none';
+    arr.push({label: "Cool Down", desc: "Easy pedal, low resistance", duration: cooldown, type: "relax", intensity: "Easy", rpm: "60", hr: "40-50"});
+    return arr;
   }
-}
 
-// Audio unlock code (Safari/iOS compatibility)
-function unlockAllAudio() {
-  if (window._audioUnlocked) return;
-  ['audioWork', 'audioRest', 'audioEnd'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
+  let phases = generatePhasesAnaerob();
+  let currentPhase = 0, timer = null, running = false, paused = false, t = phases[0].duration;
+  let workAudioFlag = false;
+
+  function updateUI() {
+    const p = phases[currentPhase];
+    const box = document.getElementById("phaseBox");
+    box.className = "phaseBox " + (p.type || p.label.toLowerCase());
+    document.getElementById("phaseLabel").textContent = p.label;
+    document.getElementById("timer").textContent = ("0" + Math.floor(t / 60)).slice(-2) + ":" + ("0" + (t % 60)).slice(-2);
+    document.getElementById("phaseInfo").innerHTML = `Intensity: <b>${p.intensity}</b>`;
+    document.getElementById("rpmHr").innerHTML = ` <span>RPM: <b>${p.rpm}</b></span><span>HR: <b>${p.hr}%</b></span> `;
+    document.getElementById("phaseCount").textContent = `Phase ${currentPhase + 1} of ${phases.length}`;
+  }
+
+  function playAudioSafe(audioElement) {
+    if (!audioElement) return;
+    if (window._audioUnlocked !== true && audioElement.paused) {
       try {
-        el.volume = 0;
-        el.play().then(function() {
-          el.pause();
-          el.currentTime = 0;
-          el.volume = 1;
-        }).catch(function(){});
+        audioElement.volume = 0;
+        audioElement.play().then(() => {
+          audioElement.pause();
+          audioElement.currentTime = 0;
+          audioElement.volume = 1;
+        }).catch(()=>{});
       } catch(e){}
+      window._audioUnlocked = true;
     }
+    audioElement.volume = 1;
+    const playPromise = audioElement.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {});
+    }
+  }
+
+  function nextPhase() {
+    if (currentPhase < phases.length - 1) {
+      currentPhase++;
+      t = parseInt(phases[currentPhase].duration);
+      workAudioFlag = false;
+      updateUI();
+      const ptype = phases[currentPhase].type || phases[currentPhase].label.toLowerCase();
+      if (ptype === 'work') {
+        playAudioSafe(document.getElementById('audioWork'));
+      } else if (ptype === 'rest') {
+        playAudioSafe(document.getElementById('audioRest'));
+      } else if (ptype === 'relax') {
+        // Optional
+      } else if (ptype === 'prepare') {
+        // Optional
+      }
+    } else {
+      running = false;
+      clearInterval(timer);
+      document.getElementById("startBtn").disabled = false;
+      playAudioSafe(document.getElementById('audioEnd'));
+    }
+  }
+
+  function startProgram() {
+    if (running && !paused) return;
+    running = true;
+    paused = false;
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("pauseBtn").style.display = "";
+    document.getElementById("resetBtn").style.display = "";
+    hideNonTimerUI(true);
+    const p = phases[currentPhase];
+    const ptype = p.type || p.label.toLowerCase();
+    if (ptype === 'work') {
+      playAudioSafe(document.getElementById('audioWork'));
+    } else if (ptype === 'rest') {
+      playAudioSafe(document.getElementById('audioRest'));
+    }
+    timer = setInterval(() => {
+      t--;
+      const p = phases[currentPhase];
+      const ptype = p.type || p.label.toLowerCase();
+      if (ptype === 'work' && t <= 4 && !workAudioFlag) {
+        playAudioSafe(document.getElementById('audioRest'));
+        workAudioFlag = true;
+      }
+      if (t < 0) {
+        nextPhase();
+      } else {
+        updateUI();
+      }
+    }, 1000);
+  }
+
+  function pauseProgram() {
+    if (!running || paused) return;
+    paused = true;
+    clearInterval(timer);
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "Resume";
+    document.getElementById("pauseBtn").style.display = "none";
+  }
+
+  function resetProgram() {
+    clearInterval(timer);
+    running = false;
+    paused = false;
+    phases = generatePhasesAnaerob();
+    currentPhase = 0;
+    t = parseInt(phases[0].duration);
+    workAudioFlag = false;
+    updateUI();
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "Start";
+    document.getElementById("pauseBtn").style.display = "none";
+    document.getElementById("resetBtn").style.display = "";
+    hideNonTimerUI(false);
+  }
+
+  function hideNonTimerUI(hide) {
+    const elems = [
+      document.querySelector('.autogen-controls'),
+      document.querySelector('.info-text'),
+      document.querySelector('.desc'),
+      document.querySelector('.logo')
+    ];
+    elems.forEach(el => { if (el) el.style.display = hide ? "none" : ""; });
+  }
+
+  function autogenPhases() {
+    phases = generatePhasesAnaerob();
+    resetProgram();
+  }
+
+  // Info Modal (wie gehabt)
+  document.getElementById("infoBtn").onclick = function() {
+    document.getElementById("programModal").style.display = "block";
+  };
+  document.getElementById("closeModalBtn").onclick = function() {
+    document.getElementById("programModal").style.display = "none";
+  };
+  window.onclick = function(event) {
+    if(event.target == document.getElementById("programModal")){
+      document.getElementById("programModal").style.display = "none";
+    }
+  };
+
+  // Audio Unlock
+  function unlockAllAudio() {
+    if (window._audioUnlocked) return;
+    ['audioWork', 'audioRest', 'audioEnd'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        try {
+          el.volume = 0;
+          el.play().then(function() {
+            el.pause();
+            el.currentTime = 0;
+            el.volume = 1;
+          }).catch(function(){});
+        } catch(e){}
+      }
+    });
+    window._audioUnlocked = true;
+  }
+  document.getElementById("startBtn").addEventListener("click", function(e) {
+    unlockAllAudio();
+    startProgram();
   });
-  window._audioUnlocked = true;
-}
+  document.getElementById("pauseBtn").onclick = pauseProgram;
+  document.getElementById("resetBtn").onclick = resetProgram;
 
-// Button events
-document.getElementById("startBtn").addEventListener("click", function(e) {
-  unlockAllAudio();
-  startTimer();
-});
-pauseBtn.onclick = pauseTimer;
-resetBtn.onclick = resetTimer;
-
-window.onload = function() {
-  autogenPhases();
-  resetTimer();
-};
+  // Initial UI
+  document.getElementById("pauseBtn").style.display = "none";
+  updateUI();
 </script>
 <audio id="audioWork" src="start_work.m4a"></audio>
 <audio id="audioRest" src="Rest.m4a"></audio>
