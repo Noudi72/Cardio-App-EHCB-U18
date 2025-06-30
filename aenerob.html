@@ -7,7 +7,6 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="icon-cardio.png" />
   <style>
-    /* ---- 1:1 intervall.html style ---- */
     body {
       background: #181818;
       color: #fff;
@@ -17,7 +16,7 @@
     }
     .logo {
       display: block;
-      margin: 18px auto 5px auto;
+      margin: 18px auto 2px auto;
       width: 80px;
       max-width: 28vw;
     }
@@ -59,7 +58,7 @@
       text-align: center;
       margin-bottom: 16px;
       color: #ffe028;
-      font-size: 0.9em;
+      font-size: 0.97em;
       font-weight: 500;
     }
     .autogen-controls {
@@ -68,8 +67,8 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 0 0;
       text-align: center;
+      gap: 0 0;
     }
     .autogen-controls label {
       background: #232323;
@@ -100,17 +99,13 @@
       outline-width: 1px;
       cursor: text;
     }
-    .autogen-controls .autogen-btn-row {
+    .autogen-btn-row {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
       margin-top: 10px;
       gap: 0;
-    }
-    .autogen-controls .autogen-btn-row button {
-      margin-top: 0;
-      margin-bottom: 0;
     }
     .autogen-controls button#generateBtn {
       background: #d32f2f;
@@ -367,9 +362,6 @@
         height: 48px;
       }
     }
-    @media (max-width: 700px) {
-      .autogen-controls button#infoBtn {}
-    }
   </style>
 </head>
 <body>
@@ -388,9 +380,10 @@
   <label>Cool Down: <input type="number" id="cooldownInput" min="10" max="900" value="300"></label>
   <div class="autogen-btn-row">
     <button id="generateBtn" onclick="autogenPhases()" type="button">Generate</button>
-    <button id="infoBtn" aria-label="Show program table" type="button">Information</button>
+    <button id="infoBtn" aria-label="Show program table" type="button">Program Table</button>
   </div>
 </div>
+
 <!-- Timer-Kachel wie bei intervall.html -->
 <div class="phaseBox prepare" id="phaseBox">
   <div class="phaseLabel" id="phaseLabel">PREPARE</div>
@@ -520,6 +513,7 @@
       </div>
     </div>
   </div>
+</div>
 <script>
   // Modal logic
   document.getElementById("infoBtn").onclick = function() {
@@ -535,6 +529,6 @@
   };
   // TODO: Timer/Phasen-Logik exakt wie in intervall.html einsetzen!
 </script>
-<!-- Audios können wie bei intervall.html eingebunden werden -->
+<!-- Audios und Timerlogik wie in intervall.html -->
 </body>
 </html>
